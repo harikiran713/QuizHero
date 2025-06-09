@@ -21,13 +21,13 @@ export async function POST(req: NextRequest) {
         email
     }
   })
-  if(existingUser)
+  if(existingUser?.emailVerified==null)
   {
     return NextResponse.json({error:"user already exits"},{status:400})
   }
   const hashedPassword =await bcrypt.hash(password,10);
-  const token =generateOTP();
-  const expires=new Date(Date.now()+1000*60*10)
+ const token =generateOTP();
+ const expires=new Date(Date.now()+1000*60*10)
 
 const user = await prisma.user.create({
     data: {
@@ -43,7 +43,7 @@ const user = await prisma.user.create({
         },
       },
     },
-  });
+});
   await prisma.verificationRequest.create({
     data:{
         identifier:email,
@@ -52,10 +52,7 @@ const user = await prisma.user.create({
     }
   })
  
-  await sendOtp(email,token)
+      await sendOtp(email,token)
       return NextResponse.json({message:"user created otp sent to mail"})
-
-
-
 
 }
