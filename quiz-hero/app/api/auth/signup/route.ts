@@ -19,15 +19,39 @@ export async function POST(req: NextRequest) {
   const existingUser =await prisma.user.findUnique({
     where:{
         email
-    }
+    }   
   })
-  if(existingUser?.emailVerified==null)
-  {
-    return NextResponse.json({error:"user already exits"},{status:400})
-  }
-  const hashedPassword =await bcrypt.hash(password,10);
+ 
+  
+ const hashedPassword =await bcrypt.hash(password,10);
  const token =generateOTP();
  const expires=new Date(Date.now()+1000*60*10)
+  if(existingUser)
+  {
+     if(existingUser?.emailVerified==null)
+  {
+  //update the previous password harikiran 
+    await prisma.user.update({
+      where:{email},
+      data:{
+        password:hashedPassword
+      }
+    })
+  //delete all the otps for that email 
+    await prisma.verificationRequest.deleteMany({
+      where:{identifier:email}
+    })
+  }
+  await prisma.verificationRequest.create({
+    data:{
+      identifier:email,
+      token,
+      expires
+    }
+  })
+  await sendOtp(email,token)
+   return NextResponse.json({error:"user already exits but not verified ..updated to the password"},{status:200})
+  }
 
 const user = await prisma.user.create({
     data: {
