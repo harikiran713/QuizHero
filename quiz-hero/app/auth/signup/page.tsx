@@ -45,6 +45,7 @@ export default  function Signup()
                 },
                 body:JSON.stringify(formData)
             })
+            
             if(response)
             {
                 console.log("sign up done")
