@@ -12,9 +12,12 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input";
 import {useState} from "react"
+import { useRouter } from "next/navigation";
+
 
 export default  function Signup()
 {
+    const router=useRouter();
     interface FormData{
         email:string,
         password:string,
@@ -46,9 +49,9 @@ export default  function Signup()
                 body:JSON.stringify(formData)
             })
             
-            if(response)
+            if(response.ok)
             {
-                console.log("sign up done")
+               router.push(`/auth/verify?email=${formData.email}`)
             }
         }
         catch(err)
@@ -64,7 +67,7 @@ export default  function Signup()
  <CardHeader>
     <CardTitle>create a account</CardTitle>
     <CardDescription>Enter you email below  set password to your account</CardDescription>
-    <CardAction ><Button variant="link" className="cursor-pointer">Sign In</Button></CardAction>
+    <CardAction ><Button variant="link" className="cursor-pointer" onClick={()=>{router.push('/auth/signin')}}>Sign In</Button></CardAction>
  </CardHeader>
  <CardContent>
     <form action="" onSubmit={handleSubmit}>
@@ -80,10 +83,10 @@ export default  function Signup()
 
             </div>
            
-        </div>\
-         <div className="flex flex-col gap-2 w-full">
-        
-       <Button className="w-full cursor-pointer ">Sign Up</Button>
+        </div>
+         <div className="flex flex-col gap-2 w-full mt-2">
+         <Button className="w-full cursor-pointer ">Sign Up</Button>
+      
    <Button className="w-full cursor-pointer" variant={"outline"}>Login with Google</Button>
        
 
