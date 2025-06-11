@@ -5,9 +5,11 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input";
 import React, {useState} from "react"
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function Signin()
 {
+    const router=useRouter()
     interface formData{
         email:string,
         password:string
@@ -37,7 +39,7 @@ signIn("credentials",{
         <CardHeader>
             <CardTitle>Login to your account</CardTitle>
             <CardDescription>Enter you email below to login to your account</CardDescription>
-            <CardAction><Button variant='link' className="cursor-pointer">Sign Up</Button></CardAction>
+            <CardAction><Button variant='link' className="cursor-pointer" onClick={()=>{router.push('/auth/signup')}}>Sign Up</Button></CardAction>
         </CardHeader>
         <CardContent>
             <form action="" onSubmit={formHandler}>

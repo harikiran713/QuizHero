@@ -51,7 +51,8 @@ export default  function Signup()
             
             if(response.ok)
             {
-               router.push(`/auth/verify?email=${formData.email}`)
+              router.push(`/auth/verify?email=${formData.email}`)
+
             }
         }
         catch(err)
