@@ -51,7 +51,7 @@ router.push("/auth/signin")
 
   return (
   
-    <Card className="w-full max-w-sm">
+    <Card className="w-full max-w-sm  mx-auto my-28">
           <CardHeader > <CardTitle>----------------Enter the otp----------------</CardTitle>
            <CardDescription>check the otp in your email:: {email}</CardDescription></CardHeader>
   <div className="space-y-2 flex flex-col max-w-sm w-full items-center">
