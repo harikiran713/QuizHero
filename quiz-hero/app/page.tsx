@@ -10,6 +10,7 @@ export default async function Home() {
  {
   redirect("/auth/signin")
  }
+
   return (
     <div>
 

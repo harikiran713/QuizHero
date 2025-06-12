@@ -24,7 +24,7 @@ export default function InputOTPControlled() {
   const router=useRouter()
   const searchParams=useSearchParams()
   React.useEffect(()=>{
-setEmail(searchParams.get('email'))
+setEmail(searchParams.get('email') as string)
   },[])
   async function handleOtp()
   {

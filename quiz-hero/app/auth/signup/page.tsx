@@ -63,8 +63,8 @@ export default  function Signup()
 
     }
     return(
-
-<Card className=" w-full max-w-sm mx-auto my-28">
+<div className="py-52">
+<Card className=" w-full max-w-sm mx-auto ">
  <CardHeader>
     <CardTitle>create a account</CardTitle>
     <CardDescription>Enter you email below  set password to your account</CardDescription>
@@ -96,6 +96,6 @@ export default  function Signup()
  </CardContent>
 
 </Card>
-
+</div>
     );
 }

@@ -51,6 +51,39 @@ import CredentialsProvider from "next-auth/providers/credentials";
       },
     }),
   ],
+
+  callbacks:{
+jwt:async  ({token}:any)=>{
+
+
+  const db_user=await prisma.user.findFirst(
+    {
+      where:{
+        email:token?.email
+      }
+    }
+
+  )
+  if(db_user)
+  {
+    token.id=db_user.id
+    token.name=db_user.name
+  }
+
+  return token;
+},
+session:({session,token}:any)=>{
+ 
+  if(token){
+    session.user.id=token.id
+    session.user.name=token.name
+    session.user.email=token.email
+    session.user
+  }
+
+  return session
+}
+  },
   pages:{
 signIn:'/auth/signin'
   },

@@ -34,8 +34,8 @@ signIn("credentials",{
 })
     }
     return(
-<div>
-    <Card className=" w-full max-w-sm  mx-auto my-28">
+<div className="py-52">
+    <Card className=" w-full max-w-sm  mx-auto ">
         <CardHeader>
             <CardTitle>Login to your account</CardTitle>
             <CardDescription>Enter you email below to login to your account</CardDescription>
