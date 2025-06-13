@@ -7,7 +7,7 @@ import UserAvatar from "./UserAvatar";
 
 export default function UserAccount({user}:any){
     return(
-<DropdownMenu>
+<DropdownMenu >
     <DropdownMenuTrigger asChild>
         {/* avatar */}
     <p><UserAvatar user={user}/></p>   

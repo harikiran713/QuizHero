@@ -10,10 +10,12 @@ export default async function Home() {
  {
   redirect("/auth/signin")
  }
+ else{
+  redirect("/dashboard")
+ }
 
   return (
-    <div>
-
-    </div>
+    
+   <div></div>
   );
 }
