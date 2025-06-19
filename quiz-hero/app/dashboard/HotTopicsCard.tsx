@@ -1,3 +1,5 @@
+"use client"
+import CustomWordCloud from "@/components/CustomWordCloud";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function HotTopics()
@@ -10,7 +12,7 @@ export default function HotTopics()
                 <CardDescription>Click on a topic to start quiz on it</CardDescription>
             </CardHeader>
             <CardContent>
-                <p>topic</p>
+                <CustomWordCloud/>
             </CardContent>
         </Card>
     );

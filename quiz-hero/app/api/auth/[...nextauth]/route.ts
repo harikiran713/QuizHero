@@ -5,13 +5,9 @@
 // console.log(y.nextauth)
 // return NextResponse.json({message:"this is from server "})
 // }
-import prisma from "@/lib/db";
-import bcrypt from "bcryptjs";
+// app/api/auth/[...nextauth]/route.ts
 import NextAuth from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials"; 
-import authoptions from "@/lib/authOptions";
+import authOptions from "@/lib/authOptions";
 
-const handler = NextAuth(authoptions);
-
-
+const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };

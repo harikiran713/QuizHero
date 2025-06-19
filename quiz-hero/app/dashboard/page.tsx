@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth";
 
 import { redirect } from "next/navigation";
 import HotTopics from "./HotTopicsCard";
+import RecentActivities from "./RecentActivities"
 export default async function Dashboard()
 {
     const session= await getServerSession(authoptions)
@@ -18,11 +19,12 @@ export default async function Dashboard()
                 <h2 className="mr-2 text-3xl font-bold tracking-tight">Dashboard</h2>
             </div>
 <div className="grid gap-4 mt-4 md:grid-cols-2">
-<QuizMe/>
+<QuizMe  />
 <HistoryCard/>
 </div>
 <div className="grid gap-4 mt-4 md:grid-cols-2 lg:grid-cols-7">
-<HotTopics/>
+{/* <HotTopics/> */}
+<RecentActivities/>
 </div>
 
 
