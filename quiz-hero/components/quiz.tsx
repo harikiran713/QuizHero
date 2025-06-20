@@ -33,6 +33,7 @@ export default function QuizCreation() {
 
             <div className="flex">
               <Button
+              type="button"
                 onClick={(e) =>{
                     e.preventDefault()
 setQuesType("close")
@@ -43,6 +44,7 @@ setQuesType("close")
                 Multiple Choice
               </Button>
               <Button
+              type="button"
                 onClick={(e) => {
                      e.preventDefault()
                     setQuesType("open")}}

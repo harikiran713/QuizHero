@@ -67,3 +67,21 @@ model VerificationRequest{
 
   @@unique([identifier, token])
 }
+enum GameType{
+  mcq
+  open_ended
+}
+model Game{
+  id String @id @default(cuid())
+  userId String
+  timeStarted DateTime
+  topic String
+  gameType GameType
+  user User @relation(fields: [userId],references: [id] onDelete: )
+  @@index([userId],name:"userId")
+}
+
+model  Question{
+  id String @id @default(cuid())
+  
+}
