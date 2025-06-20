@@ -30,11 +30,11 @@ console.log("entering")
 signIn("credentials",{
     username:formData.email,
     password:formData.password,
-    callbackUrl:'/'
+    callbackUrl:'/dashboard'
 })
     }
     return(
-<div className="py-52">
+<div className="py-36">
     <Card className=" w-full max-w-sm  mx-auto ">
         <CardHeader>
             <CardTitle>Login to your account</CardTitle>
