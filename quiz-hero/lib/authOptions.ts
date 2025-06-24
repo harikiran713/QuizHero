@@ -1,11 +1,11 @@
 import prisma from "@/lib/db";
 import bcrypt from "bcryptjs";
-import NextAuth, { NextAuthOptions } from "next-auth";
+import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { JWT } from "next-auth/jwt";
 import { Session, User } from "next-auth";
 
-// Extend the default Session type to include custom fields
+// Extend the default Session and JWT types
 declare module "next-auth" {
   interface Session {
     user: {
@@ -58,14 +58,13 @@ const authOptions: NextAuthOptions = {
         }
 
         const isValid = await bcrypt.compare(credentials.password, user.password);
-
         if (!isValid) {
           return null;
         }
 
         return {
           id: user.id,
-          name: user.name,
+          name: user.name ?? "", // Ensure name is not null
           email: user.email,
         };
       },
@@ -80,7 +79,7 @@ const authOptions: NextAuthOptions = {
 
       if (dbUser) {
         token.id = dbUser.id;
-        token.name = dbUser.name;
+        token.name = dbUser.name ?? "";
         token.email = dbUser.email;
       }
 
@@ -91,8 +90,8 @@ const authOptions: NextAuthOptions = {
       if (token) {
         session.user = {
           id: token.id,
-          name: token.name!,
-          email: token.email!,
+          name: token.name,
+          email: token.email,
         };
       }
 
@@ -104,7 +103,7 @@ const authOptions: NextAuthOptions = {
     signIn: "/auth/signin",
   },
 
-  secret: "harikira",
+  secret: "harikira", // For production, store in process.env.NEXTAUTH_SECRET
 };
 
 export default authOptions;
