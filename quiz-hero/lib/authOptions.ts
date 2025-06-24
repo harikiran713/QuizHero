@@ -1,37 +1,57 @@
 import prisma from "@/lib/db";
 import bcrypt from "bcryptjs";
-import NextAuth from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials"; 
+import NextAuth, { NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { JWT } from "next-auth/jwt";
+import { Session, User } from "next-auth";
 
- const authoptions={
+// Extend the default Session type to include custom fields
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string;
+      name: string;
+      email: string;
+    };
+  }
+
+  interface User {
+    id: string;
+    name: string;
+    email: string;
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    id: string;
+    name: string;
+    email: string;
+  }
+}
+
+const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: "email",
       credentials: {
-        username: { label: "email", type: "text", placeholder: "lodeharikiran" },
-        password: { label: "password", type: "password" },
+        username: { label: "Email", type: "text", placeholder: "you@example.com" },
+        password: { label: "Password", type: "password" },
       },
-      async authorize(credentials: any) {
-        console.log("hellofirst");
+      async authorize(credentials) {
+        console.log("Authorize Start");
 
         if (!credentials?.username || !credentials?.password) {
           return null;
         }
 
-        console.log("hello");
-
         const user = await prisma.user.findUnique({
-          where: {
-            email: credentials.username, 
-          },
+          where: { email: credentials.username },
         });
-        console.log("hello middle")
 
-        if (!user?.email || !user.password) {
+        if (!user || !user.email || !user.password) {
           return null;
         }
-
-        console.log("hello last");
 
         if (!user.emailVerified) {
           throw new Error("Email not verified");
@@ -52,41 +72,39 @@ import CredentialsProvider from "next-auth/providers/credentials";
     }),
   ],
 
-  callbacks:{
-jwt:async  ({token}:any)=>{
+  callbacks: {
+    async jwt({ token }: { token: JWT }) {
+      const dbUser = await prisma.user.findUnique({
+        where: { email: token.email! },
+      });
 
-
-  const db_user=await prisma.user.findFirst(
-    {
-      where:{
-        email:token?.email
+      if (dbUser) {
+        token.id = dbUser.id;
+        token.name = dbUser.name;
+        token.email = dbUser.email;
       }
-    }
 
-  )
-  if(db_user)
-  {
-    token.id=db_user.id
-    token.name=db_user.name
-  }
+      return token;
+    },
 
-  return token;
-},
-session:({session,token}:any)=>{
- 
-  if(token){
-    session.user.id=token.id
-    session.user.name=token.name
-    session.user.email=token.email
-    session.user
-  }
+    session({ session, token }: { session: Session; token: JWT }) {
+      if (token) {
+        session.user = {
+          id: token.id,
+          name: token.name!,
+          email: token.email!,
+        };
+      }
 
-  return session
-}
+      return session;
+    },
   },
-  pages:{
-signIn:'/auth/signin'
+
+  pages: {
+    signIn: "/auth/signin",
   },
+
   secret: "harikira",
-}
-export default authoptions
+};
+
+export default authOptions;
