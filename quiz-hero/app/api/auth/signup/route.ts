@@ -80,3 +80,5 @@ const user = await prisma.user.create({
       return NextResponse.json({message:"user created otp sent to mail"})
 
 }
+
+

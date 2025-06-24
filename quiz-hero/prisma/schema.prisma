@@ -54,6 +54,7 @@ model User {
   updatedAt     DateTime  @updatedAt
   accounts      Account[]
   sessions      Session[]
+  games         Game[] 
 }
 
 
@@ -71,17 +72,37 @@ enum GameType{
   mcq
   open_ended
 }
-model Game{
-  id String @id @default(cuid())
-  userId String
+model Game {
+  id          String     @id @default(cuid())
+  userId      String
+  questions   Question[]
   timeStarted DateTime
-  topic String
-  gameType GameType
-  user User @relation(fields: [userId],references: [id] onDelete: )
-  @@index([userId],name:"userId")
+  topic       String
+  timeEnded   DateTime?
+  gameType    GameType
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
-model  Question{
-  id String @id @default(cuid())
-  
+model topic_count {
+  id    String @id @default(cuid())
+  topic String @unique
+  count Int
+}
+
+model Question {
+  id                String   @id @default(cuid())
+  question          String
+  answer            String
+  gameId            String
+  options           Json? 
+  percentageCorrect Float? 
+  isCorrect         Boolean? 
+  questionType      GameType
+  userAnswer        String?
+
+  game Game @relation(fields: [gameId], references: [id])
+
+  @@index([gameId])
 }

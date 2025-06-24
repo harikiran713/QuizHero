@@ -23,7 +23,7 @@ export default async function Dashboard()
 <HistoryCard/>
 </div>
 <div className="grid gap-4 mt-4 md:grid-cols-2 lg:grid-cols-7">
-{/* <HotTopics/> */}
+<HotTopics/>
 <RecentActivities/>
 </div>
 
