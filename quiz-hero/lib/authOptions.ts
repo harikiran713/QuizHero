@@ -3,9 +3,9 @@ import bcrypt from "bcryptjs";
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { JWT } from "next-auth/jwt";
-import { Session, User } from "next-auth";
+import { Session } from "next-auth";
 
-// Extend the default Session and JWT types
+// === Type Augmentation ===
 declare module "next-auth" {
   interface Session {
     user: {
@@ -30,6 +30,7 @@ declare module "next-auth/jwt" {
   }
 }
 
+// === Auth Options ===
 const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -64,8 +65,8 @@ const authOptions: NextAuthOptions = {
 
         return {
           id: user.id,
-          name: user.name ?? "", // Ensure name is not null
-          email: user.email,
+          name: user.name ?? "", // name fallback
+          email: user.email ?? "", // email fallback
         };
       },
     }),
@@ -74,13 +75,13 @@ const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token }: { token: JWT }) {
       const dbUser = await prisma.user.findUnique({
-        where: { email: token.email! },
+        where: { email: token.email ?? "" },
       });
 
       if (dbUser) {
         token.id = dbUser.id;
         token.name = dbUser.name ?? "";
-        token.email = dbUser.email;
+        token.email = dbUser.email ?? ""; // FIXED here
       }
 
       return token;
@@ -103,7 +104,7 @@ const authOptions: NextAuthOptions = {
     signIn: "/auth/signin",
   },
 
-  secret: "harikira", // For production, store in process.env.NEXTAUTH_SECRET
+  secret:  "harikira", // Best to use env var
 };
 
 export default authOptions;
