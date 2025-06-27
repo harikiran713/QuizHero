@@ -1,12 +1,10 @@
+// app/layout.tsx
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
-import Navbar from "@/components/Navbar";
-import Features from "@/components/landing/features";
 import Header from "@/components/landing/header";
-import Hero from "@/components/landing/hero";
-import { HowItWorks } from "@/components/landing/how-it-works";
+import { QueryProvider } from "./query-provider"; // ✅ import the wrapper
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,20 +23,18 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen  `}
-      >
-
-<Providers>
-      <Header/>
-  {children}
-  </Providers>
-    
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}>
+        <QueryProvider>
+          <Providers>
+            <Header />
+            {children}
+          </Providers>
+        </QueryProvider>
       </body>
     </html>
   );
