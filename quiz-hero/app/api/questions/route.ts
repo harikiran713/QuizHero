@@ -79,11 +79,11 @@ async function askWithRetry(systemPrompt: string, userPrompt: string, retries = 
   for (let i = 0; i < retries; i++) {
     try {
       const result = await model.generateContent(systemPrompt + "\n\n" + userPrompt);
-      console.log(result)
+
       const content = result.response.text();
-      console.log(content)
+  
       let cleanContent = content.trim();
-      console.log(cleanContent)
+
       if (cleanContent.startsWith("```json")) {
         cleanContent = cleanContent.replace(/```json\s*/, "").replace(/```\s*$/, "");
       } else if (cleanContent.startsWith("```")) {

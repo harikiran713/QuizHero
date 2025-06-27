@@ -48,7 +48,8 @@ export async function POST(req: NextRequest) {
     });
 
     await prisma.question.createMany({ data: manyData });
-
+console.log("this is from server ")
+console.log(game.id)
     return NextResponse.json({ success: true, gameId: game.id });
   } catch (error) {
     console.error("Error creating game or fetching questions:", error);

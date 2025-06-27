@@ -1,9 +1,10 @@
 "use client";
 
 import type React from "react";
-import { useMutation } from "@tanstack/react-query";
-
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,8 +12,6 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { BookOpen, GraduationCap, FlaskConical, Brain } from "lucide-react";
-import axios from "axios";
-import { useRouter } from "next/navigation";
 
 export default function QuizCreation() {
   const router = useRouter();
@@ -24,13 +23,14 @@ export default function QuizCreation() {
     difficulty: "easy" | "medium" | "hard";
   };
 
-
   const [formData, setFormData] = useState<QuizData>({
     topic: "",
     questions: 0,
     mode: "general",
     difficulty: "easy",
   });
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const modes = [
     { value: "general", label: "General", icon: Brain, description: "General knowledge topics" },
@@ -45,20 +45,19 @@ export default function QuizCreation() {
     { value: "hard", label: "Hard", color: "text-red-600" },
   ];
 
-  const { mutate: getQuestion, isPending } = useMutation({
-    mutationFn: async (data: QuizData) => {
-      const response = await axios.post("http://localhost:3000/api/game", data);
-      return response.data;
-    },
-  });
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    getQuestion(formData, {
-      onSuccess: (gameId: string) => {
-        router.push(`/play/${gameId}`);
-      },
-    });
+    setIsLoading(true);
+
+    try {
+      const response = await axios.post("/api/game", formData);
+      console.log(response.data);
+      router.push(`/play/${response.data.gameId}`);
+    } catch (error) {
+      console.error("Error creating quiz:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -173,13 +172,14 @@ export default function QuizCreation() {
               type="submit"
               className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition-all duration-200"
               disabled={
+                isLoading ||
                 !formData.topic ||
                 formData.questions <= 0 ||
                 !formData.mode ||
                 !formData.difficulty
               }
             >
-              Create Quiz
+              {isLoading ? "Creating..." : "Create Quiz"}
             </Button>
           </form>
         </CardContent>
