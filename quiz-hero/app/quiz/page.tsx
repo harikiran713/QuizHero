@@ -10,7 +10,7 @@ export default async function Quiz()
 {
    
     return(
-<div>
+<div className=" min-h-screen bg-gradient-to-br from-purple-100 via white to-pink-100 ">
     <QuizCreation/>
 </div>
     );

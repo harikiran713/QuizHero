@@ -21,7 +21,7 @@ export default function InputOTPControlled() {
   const [email, setEmail] = React.useState<string>("");
   const router = useRouter();
 
-  // ✅ Load query param client-side only
+
   React.useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const emailParam = params.get("email");

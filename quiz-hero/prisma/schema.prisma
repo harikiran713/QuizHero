@@ -69,8 +69,10 @@ model VerificationRequest{
   @@unique([identifier, token])
 }
 enum GameType{
-  mcq
-  open_ended
+  general
+  neet
+  upsc
+  jee_inorganic
 }
 model Game {
   id          String     @id @default(cuid())
@@ -78,6 +80,7 @@ model Game {
   questions   Question[]
   timeStarted DateTime
   topic       String
+  difficulty String
   timeEnded   DateTime?
   gameType    GameType
   user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
