@@ -1,17 +1,16 @@
-
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import authOptions from "@/lib/authOptions";
 import prisma from "@/lib/db";
 import QuizGame from "@/components/QuizGame";
 
-interface GamePageProps {
+interface PageProps {
   params: {
     gameId: string;
   };
 }
 
-export default async function GamePage({ params }: GamePageProps) {
+export default async function Page({ params }: PageProps) {
   const session = await getServerSession(authOptions);
   if (!session?.user) redirect("/");
 
@@ -35,6 +34,7 @@ export default async function GamePage({ params }: GamePageProps) {
     questions: game.questions.map((q) => {
       const parsedOptions =
         typeof q.options === "string" ? JSON.parse(q.options) : q.options;
+
       return {
         ...q,
         options: parsedOptions,
