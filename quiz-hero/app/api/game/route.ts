@@ -44,6 +44,7 @@ export async function POST(req: NextRequest) {
         options: JSON.stringify(options),
         gameId: game.id,
         questionType: mode,
+        reason:question.reason
       };
     });
 

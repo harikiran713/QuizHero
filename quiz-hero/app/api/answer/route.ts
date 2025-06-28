@@ -9,6 +9,8 @@ export async function POST(req: NextRequest) {
     const question = await prisma.question.findUnique({
       where: { id: questionId },
     });
+    console.log("question")
+    console.log(question)
 
     if (!question) {
       return NextResponse.json(
@@ -17,11 +19,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Check answer
+   
     const isCorrect =
       question.answer.toLowerCase().trim() === userAnswer.toLowerCase().trim();
 
-    // Update the question record
     await prisma.question.update({
       where: { id: questionId },
       data: {
@@ -30,20 +31,11 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Parse options
-    let explanation = "";
-    try {
-      const parsedOptions = JSON.parse(question.options as any);
-      explanation = parsedOptions?.reason || "";
-    } catch (err) {
-      console.error("Failed to parse options JSON:", err);
-    }
-
     return NextResponse.json(
       {
         isCorrect,
         correctAnswer: question.answer,
-        explanation,
+        explanation:question.reason,
       },
       { status: 200 }
     );

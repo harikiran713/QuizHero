@@ -109,6 +109,8 @@ export const POST = async (req: NextRequest) => {
     const userPrompt = formatPrompt(topic, level, count);
 
     const quizData = await askWithRetry(systemPrompt, userPrompt);
+    console.log("quiz data")
+    console.log(quizData)
     return NextResponse.json(quizData, { status: 200 });
   } catch (err: any) {
     return NextResponse.json(
