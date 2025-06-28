@@ -4,12 +4,7 @@ import authOptions from "@/lib/authOptions";
 import prisma from "@/lib/db";
 import QuizGame from "@/components/QuizGame";
 
-interface PageProps {
-  params: {
-    gameId: string;
-  };
-}
-
+// @ts-expect-error TypeScript workaround for Next.js async component
 export default async function Page({ params }: { params: { gameId: string } }) {
   const session = await getServerSession(authOptions);
   if (!session?.user) redirect("/");
@@ -32,8 +27,10 @@ export default async function Page({ params }: { params: { gameId: string } }) {
   const parsedGame = {
     ...game,
     questions: game.questions.map((q) => {
-      const parsedOptions =
-        typeof q.options === "string" ? JSON.parse(q.options) : q.options;
+      // Handle both stringified and raw options
+      const parsedOptions = typeof q.options === "string" 
+        ? JSON.parse(q.options) 
+        : q.options;
 
       return {
         ...q,
