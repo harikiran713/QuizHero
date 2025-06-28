@@ -1,11 +1,12 @@
-import HistoryCard from "@/components/dashboard/HistoryCard";
-import QuizMe from "@/components/dashboard/quizMe";
+import HistoryCard from "@/components/dashboard/header1";
+import QuizMe from "@/components/dashboard/quiz-card";
 import authoptions from "@/lib/authOptions";
 import { getServerSession } from "next-auth";
 
 import { redirect } from "next/navigation";
-import HotTopics from "./HotTopicsCard";
-import RecentActivities from "./RecentActivities"
+
+import Header from "@/components/dashboard/header1";
+import DashboardGrid from "@/components/dashboard/dashboard-grid";
 export default async function Dashboard()
 {
     const session= await getServerSession(authoptions)
@@ -14,21 +15,18 @@ export default async function Dashboard()
      return   redirect('/')
     }
     return(
-        <main className="p-18 mx-auto max-w-7xl">
-            <div className="flex items-center" >
-                <h2 className="mr-2 text-3xl font-bold tracking-tight">Dashboard</h2>
-            </div>
-<div className="grid gap-4 mt-4 md:grid-cols-2">
-<QuizMe  />
-<HistoryCard/>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-6">
+
+<div className="max-w-6xl mx-auto">
+    <Header/>
+    <div className="py-12"> <DashboardGrid /></div>
+   
+
 </div>
-<div className="grid gap-4 mt-4 md:grid-cols-2 lg:grid-cols-7">
-<HotTopics/>
-<RecentActivities/>
 </div>
 
 
-        </main>
+     
 
     );
 }

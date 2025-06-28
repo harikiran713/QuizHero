@@ -1,16 +1,17 @@
+
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import authOptions from "@/lib/authOptions";
 import prisma from "@/lib/db";
 import QuizGame from "@/components/QuizGame";
 
-interface PageParams {
+interface GamePageProps {
   params: {
     gameId: string;
   };
 }
 
-export default async function GamePage({ params }: PageParams) {
+export default async function GamePage({ params }: GamePageProps) {
   const session = await getServerSession(authOptions);
   if (!session?.user) redirect("/");
 
@@ -29,16 +30,16 @@ export default async function GamePage({ params }: PageParams) {
     );
   }
 
-  // Parse question options (stringified JSON) and enrich question data
   const parsedGame = {
     ...game,
     questions: game.questions.map((q) => {
-      const parsedOptions = typeof q.options === "string" ? JSON.parse(q.options) : q.options;
+      const parsedOptions =
+        typeof q.options === "string" ? JSON.parse(q.options) : q.options;
       return {
         ...q,
         options: parsedOptions,
         correctAnswer: q.answer,
-        explanation: parsedOptions.reason ?? "", // Use explanation if present
+        explanation: parsedOptions.reason ?? "",
       };
     }),
   };
