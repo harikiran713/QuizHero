@@ -2,15 +2,15 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import authOptions from "@/lib/authOptions";
 import prisma from "@/lib/db";
-import QuizGame from "@/components/QuizGame"; // Adjust path if needed
+import QuizGame from "@/components/QuizGame";
 
-interface Props {
+interface PageParams {
   params: {
     gameId: string;
   };
 }
 
-export default async function GamePage({ params }: Props) {
+export default async function GamePage({ params }: PageParams) {
   const session = await getServerSession(authOptions);
   if (!session?.user) redirect("/");
 
@@ -29,15 +29,18 @@ export default async function GamePage({ params }: Props) {
     );
   }
 
-  // Parse JSON options and pass to QuizGame
+  // Parse question options (stringified JSON) and enrich question data
   const parsedGame = {
     ...game,
-    questions: game.questions.map((q) => ({
-      ...q,
-      options: typeof q.options === "string" ? JSON.parse(q.options) : q.options,
-      correctAnswer: q.answer,
-      explanation: JSON.parse(q.options).reason ?? "", // Optional fallback
-    })),
+    questions: game.questions.map((q) => {
+      const parsedOptions = typeof q.options === "string" ? JSON.parse(q.options) : q.options;
+      return {
+        ...q,
+        options: parsedOptions,
+        correctAnswer: q.answer,
+        explanation: parsedOptions.reason ?? "", // Use explanation if present
+      };
+    }),
   };
 
   return <QuizGame game={parsedGame} />;

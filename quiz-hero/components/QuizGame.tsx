@@ -146,7 +146,7 @@ export default function QuizGame({ game }: QuizGameProps) {
 
   if (quizCompleted) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 flex items-center justify-center overflow-x-hidden">
         <Card className="max-w-2xl w-full shadow-xl">
           <CardContent className="p-8 text-center">
             <Trophy className="w-20 h-20 text-yellow-500 mx-auto mb-4" />
@@ -175,12 +175,12 @@ export default function QuizGame({ game }: QuizGameProps) {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button onClick={restartQuiz} variant="outline">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center w-full px-4">
+              <Button onClick={restartQuiz} variant="outline" className="w-full sm:w-auto">
                 <RotateCcw className="w-5 h-5 mr-2" />
                 Retake Quiz
               </Button>
-              <Button onClick={() => (window.location.href = "/")}>
+              <Button onClick={() => (window.location.href = "/")} className="w-full sm:w-auto">
                 <Home className="w-5 h-5 mr-2" />
                 Home
               </Button>
@@ -192,10 +192,10 @@ export default function QuizGame({ game }: QuizGameProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 p-4 overflow-x-hidden">
       <div className="max-w-4xl mx-auto">
         <Card className="mb-6 shadow-lg">
-          <CardContent className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-6 gap-4">
+          <CardContent className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-6 gap-6">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <div>
                 <h1 className="text-2xl font-bold">{game.topic}</h1>
@@ -230,8 +230,8 @@ export default function QuizGame({ game }: QuizGameProps) {
           </CardContent>
         </Card>
 
-        <div className="mb-6">
-          <div className="flex justify-between items-center mb-3">
+        <div className="mb-6 px-2 sm:px-0">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 gap-2 sm:gap-0">
             <span className="text-lg font-semibold">Progress</span>
             <span className="text-lg text-gray-600">
               {currentQuestionIndex + 1} of {totalQuestions}
@@ -337,12 +337,12 @@ export default function QuizGame({ game }: QuizGameProps) {
           </Card>
         )}
 
-        <div className="flex justify-center pb-8">
+        <div className="flex justify-center pb-8 px-4">
           {!showResult ? (
             <Button
               onClick={handleSubmitAnswer}
               disabled={!selectedAnswer || isLoading}
-              className="px-12 py-4 text-lg font-semibold"
+              className="px-12 py-4 text-lg font-semibold w-full sm:w-auto"
               size="lg"
             >
               {isLoading ? (
@@ -357,7 +357,7 @@ export default function QuizGame({ game }: QuizGameProps) {
           ) : (
             <Button
               onClick={handleNextQuestion}
-              className="px-12 py-4 text-lg font-semibold"
+              className="px-12 py-4 text-lg font-semibold w-full sm:w-auto"
               size="lg"
             >
               {currentQuestionIndex < totalQuestions - 1
