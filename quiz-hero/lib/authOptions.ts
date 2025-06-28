@@ -2,6 +2,7 @@ import prisma from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 import { JWT } from "next-auth/jwt";
 import { Session } from "next-auth";
 
@@ -30,9 +31,10 @@ declare module "next-auth/jwt" {
   }
 }
 
-// === Auth Options ===
+
 const authOptions: NextAuthOptions = {
   providers: [
+   
     CredentialsProvider({
       name: "email",
       credentials: {
@@ -40,48 +42,61 @@ const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        console.log("Authorize Start");
-
-        if (!credentials?.username || !credentials?.password) {
-          return null;
-        }
+        if (!credentials?.username || !credentials?.password) return null;
 
         const user = await prisma.user.findUnique({
           where: { email: credentials.username },
         });
 
-        if (!user || !user.email || !user.password) {
-          return null;
-        }
+        if (!user || !user.password) return null;
 
-        if (!user.emailVerified) {
-          throw new Error("Email not verified");
-        }
+        if (!user.emailVerified) throw new Error("Email not verified");
 
         const isValid = await bcrypt.compare(credentials.password, user.password);
-        if (!isValid) {
-          return null;
-        }
+        if (!isValid) return null;
 
         return {
           id: user.id,
-          name: user.name ?? "", // name fallback
-          email: user.email ?? "", // email fallback
+          name: user.name ?? "",
+          email: user.email ?? "",
         };
       },
+    }),
+
+    
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
 
   callbacks: {
-    async jwt({ token }: { token: JWT }) {
-      const dbUser = await prisma.user.findUnique({
-        where: { email: token.email ?? "" },
-      });
+  
+    async jwt({ token, account, profile }) {
+      if (account?.provider === "google" && profile?.email) {
+        const dbUser = await prisma.user.upsert({
+          where: { email: profile.email },
+          update: {},
+          create: {
+            email: profile.email,
+            name: profile.name ?? "",
+            emailVerified: new Date(),
+          },
+        });
 
-      if (dbUser) {
         token.id = dbUser.id;
         token.name = dbUser.name ?? "";
-        token.email = dbUser.email ?? ""; // FIXED here
+        token.email = dbUser.email ?? "";
+      } else {
+        const dbUser = await prisma.user.findUnique({
+          where: { email: token.email ?? "" },
+        });
+
+        if (dbUser) {
+          token.id = dbUser.id;
+          token.name = dbUser.name ?? "";
+          token.email = dbUser.email ?? "";
+        }
       }
 
       return token;
@@ -95,8 +110,12 @@ const authOptions: NextAuthOptions = {
           email: token.email,
         };
       }
-
       return session;
+    },
+
+   
+    async redirect() {
+      return "http://localhost:3000/dashboard";
     },
   },
 
@@ -104,7 +123,7 @@ const authOptions: NextAuthOptions = {
     signIn: "/auth/signin",
   },
 
-  secret:  "harikira", // Best to use env var
+  secret: process.env.NEXTAUTH_SECRET, // ✅ Use from .env.local
 };
 
 export default authOptions;

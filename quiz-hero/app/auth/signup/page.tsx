@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input";
 import {useState} from "react"
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 
 export default  function Signup()
@@ -88,7 +89,7 @@ export default  function Signup()
          <div className="flex flex-col gap-2 w-full mt-2">
          <Button className="w-full cursor-pointer ">Sign Up</Button>
       
-   <Button className="w-full cursor-pointer" variant={"outline"}>Login with Google</Button>
+   <Button className="w-full cursor-pointer" variant={"outline"} onClick={() => signIn("google")}>Login with Google</Button>
        
 
     </div>

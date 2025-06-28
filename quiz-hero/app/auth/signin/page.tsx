@@ -49,7 +49,7 @@ signIn("credentials",{
                     <Label>Password</Label>
                     <Input name="password" value={formData.password} onChange={inputCollector}/>
                       <Button className="cursor-pointer" type="submit">Login</Button>
-                <Button variant="outline" className="cursor-pointer">Login with Google</Button>
+                <Button variant="outline" className="cursor-pointer"  onClick={() => signIn("google")}>Login with Google</Button>
 
                 </div>
                 

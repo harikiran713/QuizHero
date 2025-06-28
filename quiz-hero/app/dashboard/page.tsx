@@ -9,7 +9,11 @@ import Header from "@/components/dashboard/header1";
 import DashboardGrid from "@/components/dashboard/dashboard-grid";
 export default async function Dashboard()
 {
+    
     const session= await getServerSession(authoptions)
+    console.log("hello")
+    console.log("SESSION:", session);
+
     if(!session?.user)
     {
      return   redirect('/')
