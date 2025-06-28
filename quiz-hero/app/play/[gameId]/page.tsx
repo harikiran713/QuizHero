@@ -10,7 +10,7 @@ interface PageProps {
   };
 }
 
-export default async function Page({ params }: PageProps) {
+export default async function Page({ params }: { params: { gameId: string } }) {
   const session = await getServerSession(authOptions);
   if (!session?.user) redirect("/");
 
