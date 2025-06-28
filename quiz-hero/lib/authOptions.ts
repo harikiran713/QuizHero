@@ -115,7 +115,8 @@ const authOptions: NextAuthOptions = {
 
    
     async redirect() {
-      return "http://localhost:3000/dashboard";
+      const baseUrl = process.env.NEXTAUTH_URL;
+      return `${baseUrl}/dashboard`;
     },
   },
 
