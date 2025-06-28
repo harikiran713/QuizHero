@@ -4,16 +4,14 @@ import authOptions from "@/lib/authOptions";
 import prisma from "@/lib/db";
 import QuizGame from "@/components/QuizGame";
 
-export default async function GamePage({
-  params
-}: {
-  params: { gameId: string };
-}) {
+export default async function GamePage({ params }:any) {
+  const x = await params
+
   const session = await getServerSession(authOptions);
   if (!session?.user) redirect("/");
 
   const game = await prisma.game.findUnique({
-    where: { id: params.gameId },
+    where: { id: x.gameId },
     include: {
       questions: true,
     },
@@ -37,7 +35,7 @@ export default async function GamePage({
         ...q,
         options: parsedOptions,
         correctAnswer: q.answer,
-        explanation: parsedOptions.reason ?? "",
+        explanation: parsedOptions?.reason ?? "",
       };
     }),
   };
