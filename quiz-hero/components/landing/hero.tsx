@@ -7,10 +7,7 @@ export default function Hero() {
   return (
     <section className="py-20 px-4">
       <div className="container mx-auto text-center max-w-4xl">
-        <Badge className="mb-6 bg-purple-100 text-purple-700 hover:bg-purple-100">
-          <Sparkles className="w-4 h-4 mr-1" />
-          Powered by Advanced AI
-        </Badge>
+        
 
         <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
           Create Smart Quizzes with{" "}
@@ -25,21 +22,7 @@ export default function Hero() {
 
        
 
-        <div className="flex items-center justify-center space-x-8 text-sm text-gray-500">
-          {[
-            { icon: Users, text: "10,000+ Users" },
-            { icon: Trophy, text: "50,000+ Quizzes Created" },
-            { icon: Zap, text: "99.9% Uptime" },
-          ].map((stat) => (
-            <div
-              key={stat.text}
-              className="flex items-center hover:scale-110 hover:text-purple-600 transition-all duration-200"
-            >
-              <stat.icon className="h-4 w-4 mr-1" />
-              {stat.text}
-            </div>
-          ))}
-        </div>
+     
       </div>
     </section>
   )

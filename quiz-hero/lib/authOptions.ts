@@ -6,7 +6,6 @@ import GoogleProvider from "next-auth/providers/google";
 import { JWT } from "next-auth/jwt";
 import { Session } from "next-auth";
 
-// === Type Augmentation ===
 declare module "next-auth" {
   interface Session {
     user: {
@@ -31,14 +30,16 @@ declare module "next-auth/jwt" {
   }
 }
 
-
 const authOptions: NextAuthOptions = {
   providers: [
-   
     CredentialsProvider({
       name: "email",
       credentials: {
-        username: { label: "Email", type: "text", placeholder: "you@example.com" },
+        username: {
+          label: "Email",
+          type: "text",
+          placeholder: "you@example.com",
+        },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
@@ -49,10 +50,12 @@ const authOptions: NextAuthOptions = {
         });
 
         if (!user || !user.password) return null;
-
         if (!user.emailVerified) throw new Error("Email not verified");
 
-        const isValid = await bcrypt.compare(credentials.password, user.password);
+        const isValid = await bcrypt.compare(
+          credentials.password,
+          user.password
+        );
         if (!isValid) return null;
 
         return {
@@ -63,7 +66,6 @@ const authOptions: NextAuthOptions = {
       },
     }),
 
-    
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
@@ -71,7 +73,6 @@ const authOptions: NextAuthOptions = {
   ],
 
   callbacks: {
-  
     async jwt({ token, account, profile }) {
       if (account?.provider === "google" && profile?.email) {
         const dbUser = await prisma.user.upsert({
@@ -112,19 +113,16 @@ const authOptions: NextAuthOptions = {
       }
       return session;
     },
-
-   
-    async redirect() {
-      const baseUrl = process.env.NEXTAUTH_URL;
-      return `${baseUrl}/dashboard`;
-    },
   },
 
   pages: {
     signIn: "/auth/signin",
   },
 
-  secret: process.env.NEXTAUTH_SECRET, // ✅ Use from .env.local
+  secret: process.env.NEXTAUTH_SECRET || "hardcoded-secret",
 };
+
+// This avoids the INVALID_CALLBACK_URL error even without .env
+(global as any).NEXTAUTH_URL = "http://localhost:3000";
 
 export default authOptions;

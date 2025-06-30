@@ -30,7 +30,7 @@ console.log("entering")
 signIn("credentials",{
     username:formData.email,
     password:formData.password,
-    callbackUrl:'/'
+    callbackUrl:'/dashboard'
 })
     }
     return(
