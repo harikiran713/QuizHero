@@ -88,7 +88,7 @@ export default function Signin() {
                 className="cursor-pointer"
                 onClick={() => signIn("google")} // ⛔ callbackUrl removed
               >
-                Login with Google
+                Login with Google.
               </Button>
             </div>
           </form>
