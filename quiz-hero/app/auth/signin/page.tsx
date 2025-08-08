@@ -19,7 +19,12 @@ import { useRouter } from "next/navigation";
 export default function Signin() {
   const router = useRouter();
 
-  const [formData, setFormData] = useState({
+  interface FormData {
+    email: string;
+    password: string;
+  }
+
+  const [formData, setFormData] = useState<FormData>({
     email: "",
     password: "",
   });
@@ -31,16 +36,17 @@ export default function Signin() {
 
   async function formHandler(e: React.FormEvent) {
     e.preventDefault();
-    const res = await signIn("credentials", {
-      username: formData.email,
-      password: formData.password,
-      // ⛔ callbackUrl removed
-    });
 
-    // Optional: if needed, manually handle errors or redirects
-    // if (res?.error) {
-    //   console.error("Login failed:", res.error);
-    // }
+    await signIn("credentials", {
+      username: formData.email, // ✅ This should match your NextAuth config
+      password: formData.password,
+      callbackUrl: "/dashboard",
+      redirect: true,
+    });
+  }
+
+  async function handleGoogleLogin() {
+    await signIn("google", { callbackUrl: "/dashboard" });
   }
 
   return (
@@ -69,14 +75,15 @@ export default function Signin() {
                 name="email"
                 value={formData.email}
                 onChange={inputCollector}
+                required
               />
-
               <Label>Password</Label>
               <Input
-                name="password"
                 type="password"
+                name="password"
                 value={formData.password}
                 onChange={inputCollector}
+                required
               />
 
               <Button type="submit" className="cursor-pointer">
@@ -86,9 +93,10 @@ export default function Signin() {
               <Button
                 variant="outline"
                 className="cursor-pointer"
-                onClick={() => signIn("google")} // ⛔ callbackUrl removed
+                type="button"
+                onClick={handleGoogleLogin}
               >
-                Login with Google.
+                Login with Google
               </Button>
             </div>
           </form>

@@ -30,14 +30,14 @@ export async function POST(req: NextRequest) {
   {
      if(existingUser?.emailVerified==null)
   {
-  //update the previous password harikiran 
+ 
     await prisma.user.update({
       where:{email},
       data:{
         password:hashedPassword
       }
     })
-  //delete all the otps for that email 
+  
     await prisma.verificationRequest.deleteMany({
       where:{identifier:email}
     })
