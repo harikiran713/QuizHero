@@ -72,6 +72,18 @@ const authOptions: NextAuthOptions = {
     }),
   ],
 
+  cookies: {
+    state: {
+      name: `__Secure-next-auth.state`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax', // use 'none' if your OAuth provider redirects cross-site
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+      },
+    },
+  },
+
   callbacks: {
     async jwt({ token, account, profile }) {
       if (account?.provider === "google" && profile?.email) {
@@ -119,10 +131,18 @@ const authOptions: NextAuthOptions = {
     signIn: "/auth/signin",
   },
 
-  secret: process.env.NEXTAUTH_SECRET || "hardcoded-secret",
+  secret: process.env.NEXTAUTH_SECRET,
+
+  // Make sure this matches exactly your deployed site
+  // and localhost for development
+  debug: process.env.NODE_ENV === "development",
 };
 
-// This avoids the INVALID_CALLBACK_URL error even without .env
-(global as any).NEXTAUTH_URL = "http://localhost:3000";
+// Local dev
+if (process.env.NODE_ENV !== "production") {
+  (global as any).NEXTAUTH_URL = "http://localhost:3000";
+} else {
+  (global as any).NEXTAUTH_URL = "https://quiz-hero-seven.vercel.app";
+}
 
 export default authOptions;
