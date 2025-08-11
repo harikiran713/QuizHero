@@ -27,12 +27,16 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    const { data } = await axios.post("http://localhost:3000/api/questions", {
-      topic,
-      level: difficulty,
-      count: questions,
-      mode,
-    });
+const baseUrl =
+  process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+
+const { data } = await axios.post(`${baseUrl}/api/questions`, {
+  topic,
+  level: difficulty,
+  count: questions,
+  mode,
+});
+
 
     const manyData = data.questions.map((question: any) => {
       let options = [question.answer, question.option1, question.option2, question.option3];
