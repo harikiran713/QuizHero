@@ -50,7 +50,7 @@ export default function QuizCreation() {
     setIsLoading(true);
 
     try {
-      const response = await axios.post("/api/game", formData);
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/game`, formData);
       console.log(response.data);
       router.push(`/play/${response.data.gameId}`);
     } catch (error) {
