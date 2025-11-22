@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+console.log(process.env.GEMINI_API_KEY!)
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
 type Difficulty = "easy" | "medium" | "hard";
 
@@ -82,6 +83,7 @@ async function askWithRetry(systemPrompt: string, userPrompt: string, retries = 
           responseMimeType: "application/json",
         },
       });
+     console.log(result)
 
       const content = result.response.text();
       let cleanContent = content.trim();
@@ -92,6 +94,7 @@ async function askWithRetry(systemPrompt: string, userPrompt: string, retries = 
       }
 
       const json = JSON.parse(cleanContent);
+      console.log(json)
 
       if (isValidJSONResponse(json)) {
         return json;
@@ -128,6 +131,7 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
     const systemPrompt = SYSTEM_PROMPTS[mode] ?? SYSTEM_PROMPTS["general"];
     const userPrompt = formatPrompt(topic, level, count);
     const quizData = await askWithRetry(systemPrompt, userPrompt);
+    console.log(quizData)
 
     return NextResponse.json(quizData, { status: 200 });
   } catch (err: any) {
