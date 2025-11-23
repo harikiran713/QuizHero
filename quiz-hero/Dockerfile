@@ -1,42 +1,39 @@
-# --- Base Stage ---
-FROM node:18-alpine AS base
+# ---- Build Stage ----
+FROM node:18-alpine AS builder
 WORKDIR /app
-COPY package*.json ./
 
-# --- Dependencies Stage ---
-FROM base AS deps
+# Copy package files
+COPY package.json package-lock.json ./
+
+# Install all dependencies
 RUN npm ci
 
-# --- Builder Stage ---
-FROM deps AS builder
-WORKDIR /app
+# Copy the rest of the project
 COPY . .
-RUN npx prisma generate
+
+# Build the Next.js app
 RUN npm run build
 
-# --- Runner Stage ---
+# ---- Production Image ----
 FROM node:18-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
-ENV PORT=3000
+ENV NEXT_TELEMETRY_DISABLED=1
 
-# Copy package files
-COPY package*.json ./
-
-# Install production dependencies
+# Install production deps
+COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
 
 # Copy required files from builder
-COPY --from=builder /app/next.config.js ./next.config.js
+COPY --from=builder /app/next.config.ts ./next.config.ts
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
-
-# ❗ IMPORTANT: Copy Prisma schema + migrations
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/package.json ./package.json
 
 # Expose port
 EXPOSE 3000
 
 # Start command
-CMD ["npm", "run", "start"]
+CMD ["npm", "start"]
