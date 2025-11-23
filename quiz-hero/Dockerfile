@@ -1,58 +1,42 @@
-# -------------------------------
-# 1. Install dependencies & build app
-# -------------------------------
-FROM node:18-alpine AS builder
-
-# Set working directory
+# --- Base Stage ---
+FROM node:18-alpine AS base
 WORKDIR /app
+COPY package*.json ./
 
-# Copy dependencies first (layer caching)
-COPY package.json package-lock.json* ./
+# --- Dependencies Stage ---
+FROM base AS deps
 RUN npm ci
 
-# Copy rest of the project (including next.config.js)
+# --- Builder Stage ---
+FROM deps AS builder
+WORKDIR /app
 COPY . .
-
-# Build the Next.js app
+RUN npx prisma generate
 RUN npm run build
 
-# -------------------------------
-# 2. Production image
-# -------------------------------
+# --- Runner Stage ---
 FROM node:18-alpine AS runner
-
 WORKDIR /app
 
-# Set NODE_ENV for production
 ENV NODE_ENV=production
+ENV PORT=3000
 
-# Install only production dependencies
-COPY package.json package-lock.json* ./
+# Copy package files
+COPY package*.json ./
+
+# Install production dependencies
 RUN npm ci --omit=dev
 
-# Copy build output and public folder
+# Copy required files from builder
+COPY --from=builder /app/next.config.js ./next.config.js
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 
-# ✅ Only copy next.config.js *if it exists* (optional):
-# This line causes errors if next.config.js is not in the project.
-# Comment it out if you're not using a custom config:
-# COPY --from=builder /app/next.config.js ./next.config.js
+# ❗ IMPORTANT: Copy Prisma schema + migrations
+COPY --from=builder /app/prisma ./prisma
 
-# Copy build output and public folder
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/public ./public
-
-# Copy only if you are using this file (adjust as needed)
-# COPY --from=builder /app/next.config.js ./next.config.js
-# COPY --from=builder /app/next.config.mjs ./next.config.mjs
-
-# Optional config files
-COPY --from=builder /app/next-env.d.ts ./next-env.d.ts
-COPY --from=builder /app/tsconfig.json ./tsconfig.json
-
-# Expose default Next.js port
+# Expose port
 EXPOSE 3000
 
-# Start the app
-CMD ["npm", "start"]
+# Start command
+CMD ["npm", "run", "start"]
