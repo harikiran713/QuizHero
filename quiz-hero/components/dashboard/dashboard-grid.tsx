@@ -1,11 +1,16 @@
 import QuizCard from './quiz-card'
 import HistoryCard from './history-card'
-export default function Dashboard(){
 
-    return(
+interface DashboardGridProps {
+    totalQuizzes: number;
+}
+
+export default function DashboardGrid({ totalQuizzes }: DashboardGridProps) {
+
+    return (
         <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
-            <QuizCard/>
-            <HistoryCard/>
+            <QuizCard />
+            <HistoryCard totalQuizzes={totalQuizzes} />
 
         </div>
     )

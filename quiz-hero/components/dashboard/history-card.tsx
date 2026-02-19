@@ -4,7 +4,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 
-export default function HistoryCard() {
+interface HistoryCardProps {
+  totalQuizzes: number;
+}
+
+export default function HistoryCard({ totalQuizzes }: HistoryCardProps) {
   return (
     <Card className="group relative overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700">
       <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/20 to-transparent"></div>
@@ -24,7 +28,7 @@ export default function HistoryCard() {
         <div className="space-y-4">
           <div className="flex items-center justify-between p-3 bg-white/10 rounded-lg backdrop-blur-sm">
             <span className="text-white font-medium">Total Quizzes</span>
-            <span className="text-2xl font-bold text-white">24</span>
+            <span className="text-2xl font-bold text-white">{totalQuizzes}</span>
           </div>
           <Link href="/history" className="w-full">
             <Button
