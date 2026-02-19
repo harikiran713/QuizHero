@@ -36,65 +36,65 @@ export default function QuizReview({ game }: QuizReviewProps) {
                         : (q.options as string[]);
 
                 return (
-                    <Card key={q.id} className="border-l-4 border-l-blue-500 shadow-sm">
+                    <Card key={q.id} className="backdrop-blur-md bg-white/10 border-white/20 shadow-xl text-white transition-all">
                         <CardHeader className="pb-2">
                             <div className="flex items-center justify-between">
-                                <CardTitle className="text-lg font-medium">
+                                <CardTitle className="text-lg font-medium text-white">
                                     Question {index + 1}
                                 </CardTitle>
                                 {q.isCorrect ? (
-                                    <Badge className="bg-green-500 hover:bg-green-600 flex gap-1">
+                                    <Badge className="bg-green-500/20 text-green-300 border border-green-500/50 flex gap-1 hover:bg-green-500/30">
                                         <CheckCircle className="w-3 h-3" /> Correct
                                     </Badge>
                                 ) : (
-                                    <Badge variant="destructive" className="flex gap-1">
+                                    <Badge variant="destructive" className="bg-red-500/20 text-red-300 border border-red-500/50 flex gap-1 hover:bg-red-500/30">
                                         <XCircle className="w-3 h-3" /> Incorrect
                                     </Badge>
                                 )}
                             </div>
                         </CardHeader>
                         <CardContent>
-                            <p className="text-gray-800 font-medium mb-4">{q.question}</p>
-                            <div className="space-y-2">
+                            <p className="text-white/90 font-medium mb-4 text-lg leading-relaxed">{q.question}</p>
+                            <div className="space-y-3">
                                 {options.map((option: string, optIndex: number) => {
                                     const isUserSelected = q.userAnswer === option;
                                     const isCorrectAnswer = q.answer === option;
 
-                                    let optionStyle = "border-gray-200 bg-white";
+                                    let optionStyle = "border-white/10 bg-white/5 hover:bg-white/10 text-white/80";
                                     if (isCorrectAnswer) {
-                                        optionStyle = "border-green-500 bg-green-50 ring-1 ring-green-500";
+                                        optionStyle = "border-green-500/50 bg-green-500/20 ring-1 ring-green-500/50 text-white";
                                     } else if (isUserSelected && !isCorrectAnswer) {
-                                        optionStyle = "border-red-500 bg-red-50 ring-1 ring-red-500";
+                                        optionStyle = "border-red-500/50 bg-red-500/20 ring-1 ring-red-500/50 text-white";
                                     }
 
                                     return (
                                         <div
                                             key={optIndex}
-                                            className={`p-3 rounded-lg border flex items-center justify-between transition-colors ${optionStyle}`}
+                                            className={`p-4 rounded-xl border flex items-center justify-between transition-all ${optionStyle}`}
                                         >
-                                            <span className="text-sm font-medium text-gray-700">
+                                            <span className="text-sm font-medium">
                                                 {option}
                                             </span>
                                             {isCorrectAnswer && (
-                                                <CheckCircle className="w-4 h-4 text-green-600" />
+                                                <CheckCircle className="w-5 h-5 text-green-400" />
                                             )}
                                             {isUserSelected && !isCorrectAnswer && (
-                                                <XCircle className="w-4 h-4 text-red-600" />
+                                                <XCircle className="w-5 h-5 text-red-400" />
                                             )}
                                         </div>
                                     );
                                 })}
                             </div>
-                            <div className="mt-4 p-3 bg-gray-50 rounded-md text-sm text-gray-600">
-                                <span className="font-semibold">Your Answer:</span>{" "}
+                            <div className="mt-6 p-4 bg-white/5 rounded-lg border border-white/10 text-sm text-white/70">
+                                <span className="font-semibold text-white/90">Your Answer:</span>{" "}
                                 {q.userAnswer || "Skipped"}
                             </div>
                             {q.reason && (
-                                <div className="mt-4 p-4 bg-blue-50/50 rounded-lg border border-blue-100">
-                                    <h4 className="text-sm font-semibold text-blue-800 mb-2 flex items-center gap-2">
-                                        <span className="bg-blue-100 p-1 rounded">💡</span> Explanation
+                                <div className="mt-4 p-4 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                                    <h4 className="text-sm font-semibold text-blue-300 mb-2 flex items-center gap-2">
+                                        <span className="bg-blue-500/20 p-1 rounded text-blue-300">💡</span> Explanation
                                     </h4>
-                                    <p className="text-sm text-gray-700 leading-relaxed">
+                                    <p className="text-sm text-white/80 leading-relaxed">
                                         {q.reason}
                                     </p>
                                 </div>

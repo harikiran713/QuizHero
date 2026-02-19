@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 
 export default function HistoryCard() {
   return (
-    <Card className="group relative overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700">
+    <Card className="group relative overflow-hidden border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 backdrop-blur-md bg-white/10 hover:bg-white/15">
       <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/20 to-transparent"></div>
       <CardHeader className="relative z-10 text-white pb-4">
         <div className="flex items-center justify-between">

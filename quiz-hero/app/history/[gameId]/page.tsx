@@ -62,17 +62,17 @@ export default function HistoryDetailPage() {
         );
     }
 
-    const correctAnswers = game.questions.filter((q) => q.isCorrect).length;
-    const totalQuestions = game.questions.length;
-    const scorePercentage = Math.round((correctAnswers / totalQuestions) * 100);
+    const correctAnswers = game.questions ? game.questions.filter((q) => q.isCorrect).length : 0;
+    const totalQuestions = game.questions ? game.questions.length : 0;
+    const scorePercentage = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
 
     return (
-        <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto">
                 <div className="mb-8">
                     <Link
                         href="/history"
-                        className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 mb-4"
+                        className="inline-flex items-center text-sm font-medium text-white/50 hover:text-white mb-4 transition-colors p-2 rounded-md hover:bg-white/10"
                     >
                         <ArrowLeft className="w-4 h-4 mr-1" />
                         Back to History
@@ -81,17 +81,17 @@ export default function HistoryDetailPage() {
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div>
                             <div className="flex items-center gap-3 mb-2">
-                                <h1 className="text-3xl font-bold text-gray-900">
+                                <h1 className="text-3xl font-bold text-white drop-shadow-md">
                                     {game.topic}
                                 </h1>
-                                <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-200 border-none">
+                                <Badge className="bg-white/20 hover:bg-white/30 text-white border-none">
                                     {game.gameType}
                                 </Badge>
-                                <Badge variant="outline" className="text-gray-600 border-gray-300">
+                                <Badge variant="outline" className="text-white border-white/40">
                                     {game.difficulty}
                                 </Badge>
                             </div>
-                            <div className="flex items-center text-sm text-gray-500 gap-4">
+                            <div className="flex items-center text-sm text-gray-300 gap-4">
                                 <div className="flex items-center gap-1">
                                     <Calendar className="w-4 h-4" />
                                     {new Date(game.timeStarted).toLocaleDateString()}
@@ -106,16 +106,16 @@ export default function HistoryDetailPage() {
                             </div>
                         </div>
 
-                        <Card className="bg-white shadow-sm border-2 border-blue-500/10">
+                        <Card className="backdrop-blur-md bg-white/10 border-white/20 shadow-xl">
                             <CardContent className="p-4 flex items-center gap-4">
-                                <div className="p-3 bg-blue-50 rounded-full">
-                                    <Trophy className="w-6 h-6 text-blue-600" />
+                                <div className="p-3 bg-white/10 rounded-full">
+                                    <Trophy className="w-6 h-6 text-yellow-400" />
                                 </div>
                                 <div>
-                                    <p className="text-sm font-medium text-gray-500">Score</p>
+                                    <p className="text-sm font-medium text-gray-300">Score</p>
                                     <div className="flex items-baseline gap-1">
-                                        <span className="text-2xl font-bold text-gray-900">{correctAnswers}/{totalQuestions}</span>
-                                        <span className="text-sm text-gray-500">({scorePercentage}%)</span>
+                                        <span className="text-2xl font-bold text-white">{correctAnswers}/{totalQuestions}</span>
+                                        <span className="text-sm text-gray-400">({scorePercentage}%)</span>
                                     </div>
                                 </div>
                             </CardContent>
@@ -124,7 +124,7 @@ export default function HistoryDetailPage() {
                 </div>
 
                 <div className="space-y-6">
-                    <h2 className="text-xl font-semibold text-gray-900">Questions Review</h2>
+                    <h2 className="text-xl font-semibold text-white/90">Questions Review</h2>
                     <QuizReview game={game} />
                 </div>
             </div>

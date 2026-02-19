@@ -12,10 +12,10 @@ export default async function Home() {
 
 
   return (
-    
-   <div className="min-h-screen bg-gradient-to-br from-purple-50 via white to-pink-50 px-4"> 
-    <Hero/>
-    <Features/>
-    <HowItWorks/></div>
+
+    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 px-4">
+      <Hero />
+      <Features />
+      <HowItWorks /></div>
   );
 }

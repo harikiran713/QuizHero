@@ -98,13 +98,13 @@ export default function Features() {
   ];
 
   return (
-    <section id="features" className="py-20 px-4 bg-white">
+    <section id="features" className="py-20 px-4 bg-transparent">
       <div className="container mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-4xl font-bold text-white mb-4 drop-shadow-md">
             Why Choose QuizAI?
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-200 max-w-2xl mx-auto drop-shadow-sm">
             Experience the future of quiz creation with our intelligent features
             designed for educators, trainers, and content creators.
           </p>
@@ -120,15 +120,15 @@ export default function Features() {
                 key={feature.title}
                 className="hover:scale-105 transition-transform duration-200 cursor-pointer"
               >
-                <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow h-full">
+                <Card className="backdrop-blur-md bg-white/10 border-white/20 shadow-xl hover:shadow-2xl transition-all h-full text-white">
                   <CardHeader>
                     <div
-                      className={`w-12 h-12 ${color.bg} rounded-lg flex items-center justify-center mb-4 hover:rotate-12 transition-transform duration-300`}
+                      className={`w-12 h-12 ${color.bg} bg-opacity-20 rounded-lg flex items-center justify-center mb-4 hover:rotate-12 transition-transform duration-300 backdrop-blur-sm`}
                     >
-                      <Icon className={`h-6 w-6 ${color.text}`} />
+                      <Icon className={`h-6 w-6 ${color.text} text-opacity-90`} />
                     </div>
-                    <CardTitle>{feature.title}</CardTitle>
-                    <CardDescription>{feature.description}</CardDescription>
+                    <CardTitle className="text-white text-xl">{feature.title}</CardTitle>
+                    <CardDescription className="text-gray-300 text-base leading-relaxed">{feature.description}</CardDescription>
                   </CardHeader>
                 </Card>
               </div>

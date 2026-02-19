@@ -4,7 +4,7 @@ import authOptions from "@/lib/authOptions";
 import prisma from "@/lib/db";
 import QuizGame from "@/components/QuizGame";
 
-export default async function GamePage({ params }:any) {
+export default async function GamePage({ params }: any) {
   const x = await params
 
   const session = await getServerSession(authOptions);
@@ -19,8 +19,10 @@ export default async function GamePage({ params }:any) {
 
   if (!game || !game.questions || game.questions.length === 0) {
     return (
-      <div className="p-4 text-center text-red-600 font-semibold">
-        Game not found or no questions available.
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 p-4">
+        <div className="p-8 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 text-center text-red-300 font-semibold shadow-xl">
+          Game not found or no questions available.
+        </div>
       </div>
     );
   }

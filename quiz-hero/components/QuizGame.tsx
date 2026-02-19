@@ -146,41 +146,41 @@ export default function QuizGame({ game }: QuizGameProps) {
 
   if (quizCompleted) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 flex items-center justify-center overflow-x-hidden">
-        <Card className="max-w-2xl w-full shadow-xl">
+      <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 p-4 flex items-center justify-center overflow-x-hidden">
+        <Card className="max-w-2xl w-full shadow-2xl backdrop-blur-md bg-white/10 border-white/20">
           <CardContent className="p-8 text-center">
-            <Trophy className="w-20 h-20 text-yellow-500 mx-auto mb-4" />
-            <h1 className="text-4xl font-bold mb-2">Quiz Completed!</h1>
-            <p className="text-lg text-gray-600 mb-6">
+            <Trophy className="w-20 h-20 text-yellow-400 mx-auto mb-4 drop-shadow-md" />
+            <h1 className="text-4xl font-bold mb-2 text-white">Quiz Completed!</h1>
+            <p className="text-lg text-white/80 mb-6">
               Great job on the {game.topic} quiz!
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <div className="bg-blue-50 p-6 rounded-lg">
-                <div className="text-4xl font-bold text-blue-600 mb-2">
+              <div className="bg-blue-500/20 p-6 rounded-xl border border-blue-500/30">
+                <div className="text-4xl font-bold text-blue-300 mb-2">
                   {score.correct}/{totalQuestions}
                 </div>
-                <p className="text-blue-800 font-medium">Final Score</p>
+                <p className="text-blue-200 font-medium">Final Score</p>
               </div>
-              <div className="bg-green-50 p-6 rounded-lg">
-                <div className="text-4xl font-bold text-green-600 mb-2">
+              <div className="bg-green-500/20 p-6 rounded-xl border border-green-500/30">
+                <div className="text-4xl font-bold text-green-300 mb-2">
                   {scorePercentage}%
                 </div>
-                <p className="text-green-800 font-medium">Accuracy</p>
+                <p className="text-green-200 font-medium">Accuracy</p>
               </div>
-              <div className="bg-purple-50 p-6 rounded-lg">
-                <div className="text-4xl font-bold text-purple-600 mb-2">
+              <div className="bg-purple-500/20 p-6 rounded-xl border border-purple-500/30">
+                <div className="text-4xl font-bold text-purple-300 mb-2">
                   {formatTime(timer)}
                 </div>
-                <p className="text-purple-800 font-medium">Time Taken</p>
+                <p className="text-purple-200 font-medium">Time Taken</p>
               </div>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center w-full px-4">
-              <Button onClick={restartQuiz} variant="outline" className="w-full sm:w-auto">
+              <Button onClick={restartQuiz} variant="outline" className="w-full sm:w-auto border-white/30 text-white hover:bg-white/10 bg-transparent">
                 <RotateCcw className="w-5 h-5 mr-2" />
                 Retake Quiz
               </Button>
-              <Button onClick={() => (window.location.href = "/")} className="w-full sm:w-auto">
+              <Button onClick={() => (window.location.href = "/")} className="w-full sm:w-auto bg-white text-purple-900 hover:bg-gray-100 font-bold">
                 <Home className="w-5 h-5 mr-2" />
                 Home
               </Button>
@@ -192,37 +192,37 @@ export default function QuizGame({ game }: QuizGameProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 p-4 overflow-x-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 p-4 overflow-x-hidden">
       <div className="max-w-4xl mx-auto">
-        <Card className="mb-6 shadow-lg">
+        <Card className="mb-6 shadow-xl backdrop-blur-md bg-white/10 border-white/20">
           <CardContent className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-6 gap-6">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <div>
-                <h1 className="text-2xl font-bold">{game.topic}</h1>
+                <h1 className="text-2xl font-bold text-white mb-2">{game.topic}</h1>
                 <span
-                  className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getDifficultyColor(
+                  className={`inline-block px-3 py-1 rounded-full text-sm font-medium border ${getDifficultyColor(
                     game.difficulty
-                  )}`}
+                  ).replace('bg-', 'bg-opacity-20 bg-').replace('text-', 'text-')}`}
                 >
                   {game.difficulty.charAt(0).toUpperCase() +
                     game.difficulty.slice(1)}
                 </span>
               </div>
-              <div className="flex items-center gap-2 text-lg text-gray-600 bg-gray-100 px-4 py-2 rounded-lg">
+              <div className="flex items-center gap-2 text-lg text-white/90 bg-white/10 px-4 py-2 rounded-lg border border-white/10">
                 <Clock className="w-5 h-5" />
                 {formatTime(timer)}
               </div>
             </div>
             <div className="flex items-center gap-6">
-              <div className="flex items-center gap-2 bg-green-50 px-4 py-2 rounded-lg">
-                <CheckCircle className="w-6 h-6 text-green-500" />
-                <span className="font-bold text-green-700 text-lg">
+              <div className="flex items-center gap-2 bg-green-500/20 px-4 py-2 rounded-lg border border-green-500/30">
+                <CheckCircle className="w-6 h-6 text-green-400" />
+                <span className="font-bold text-green-300 text-lg">
                   {score.correct}
                 </span>
               </div>
-              <div className="flex items-center gap-2 bg-red-50 px-4 py-2 rounded-lg">
-                <XCircle className="w-6 h-6 text-red-500" />
-                <span className="font-bold text-red-700 text-lg">
+              <div className="flex items-center gap-2 bg-red-500/20 px-4 py-2 rounded-lg border border-red-500/30">
+                <XCircle className="w-6 h-6 text-red-400" />
+                <span className="font-bold text-red-300 text-lg">
                   {score.incorrect}
                 </span>
               </div>
@@ -232,22 +232,22 @@ export default function QuizGame({ game }: QuizGameProps) {
 
         <div className="mb-6 px-2 sm:px-0">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 gap-2 sm:gap-0">
-            <span className="text-lg font-semibold">Progress</span>
-            <span className="text-lg text-gray-600">
+            <span className="text-lg font-semibold text-white/90">Progress</span>
+            <span className="text-lg text-white/70">
               {currentQuestionIndex + 1} of {totalQuestions}
             </span>
           </div>
-          <Progress value={progressPercentage} className="h-3" />
+          <Progress value={progressPercentage} className="h-3 bg-white/20" />
         </div>
 
-        <Card className="mb-6 shadow-lg">
+        <Card className="mb-6 shadow-2xl backdrop-blur-md bg-white/10 border-white/20">
           <CardContent className="p-8">
             <div className="mb-6">
-              <span className="text-lg font-semibold text-blue-600 bg-blue-50 px-4 py-2 rounded-lg">
+              <span className="text-lg font-semibold text-blue-200 bg-blue-500/20 border border-blue-500/30 px-4 py-2 rounded-lg">
                 Question {currentQuestionIndex + 1}/{totalQuestions}
               </span>
             </div>
-            <h2 className="text-2xl font-medium mb-8 leading-relaxed">
+            <h2 className="text-2xl font-medium mb-8 leading-relaxed text-white">
               {currentQuestion.question}
             </h2>
 
@@ -255,39 +255,36 @@ export default function QuizGame({ game }: QuizGameProps) {
               {currentQuestion.options.map((option, index) => (
                 <Card
                   key={index}
-                  className={`cursor-pointer border-2 ${
-                    selectedAnswer === option
-                      ? "ring-2 ring-blue-500 bg-blue-50 border-blue-200"
-                      : "hover:bg-gray-50 border-gray-200"
-                  } ${
-                    showResult && answerResult?.correctAnswer === option
-                      ? "ring-2 ring-green-500 bg-green-50 border-green-200"
+                  className={`cursor-pointer border-2 transition-all ${selectedAnswer === option
+                      ? "ring-2 ring-blue-500 bg-blue-500/30 border-blue-400"
+                      : "hover:bg-white/10 border-white/10 bg-white/5"
+                    } ${showResult && answerResult?.correctAnswer === option
+                      ? "ring-2 ring-green-500 bg-green-500/30 border-green-400"
                       : showResult &&
                         selectedAnswer === option &&
                         !answerResult?.isCorrect
-                      ? "ring-2 ring-red-500 bg-red-50 border-red-200"
-                      : ""
-                  }`}
+                        ? "ring-2 ring-red-500 bg-red-500/30 border-red-400"
+                        : ""
+                    }`}
                   onClick={() => !showResult && setSelectedAnswer(option)}
                 >
                   <CardContent className="flex items-center p-6">
                     <div className="flex items-center gap-4 w-full">
                       <div
-                        className={`flex-shrink-0 w-10 h-10 rounded-full border-2 flex items-center justify-center text-lg font-bold ${
-                          showResult && answerResult?.correctAnswer === option
-                            ? "border-green-500 bg-green-500 text-white"
+                        className={`flex-shrink-0 w-10 h-10 rounded-full border-2 flex items-center justify-center text-lg font-bold transition-all ${showResult && answerResult?.correctAnswer === option
+                            ? "border-green-400 bg-green-500/80 text-white"
                             : showResult &&
                               selectedAnswer === option &&
                               !answerResult?.isCorrect
-                            ? "border-red-500 bg-red-500 text-white"
-                            : selectedAnswer === option
-                            ? "border-blue-500 bg-blue-500 text-white"
-                            : "border-gray-300 text-gray-600"
-                        }`}
+                              ? "border-red-400 bg-red-500/80 text-white"
+                              : selectedAnswer === option
+                                ? "border-blue-400 bg-blue-500/80 text-white"
+                                : "border-white/30 text-white/70"
+                          }`}
                       >
                         {String.fromCharCode(65 + index)}
                       </div>
-                      <span className="text-gray-800 text-lg">{option}</span>
+                      <span className="text-white/90 text-lg">{option}</span>
                     </div>
                   </CardContent>
                 </Card>
@@ -297,12 +294,11 @@ export default function QuizGame({ game }: QuizGameProps) {
         </Card>
 
         {showResult && answerResult && (
-          <Card className="mb-6 shadow-lg">
+          <Card className="mb-6 shadow-xl backdrop-blur-md bg-white/10 border-white/20">
             <CardContent className="p-8">
               <div
-                className={`flex items-center gap-3 mb-6 text-xl ${
-                  answerResult.isCorrect ? "text-green-600" : "text-red-600"
-                }`}
+                className={`flex items-center gap-3 mb-6 text-xl ${answerResult.isCorrect ? "text-green-400" : "text-red-400"
+                  }`}
               >
                 {answerResult.isCorrect ? (
                   <CheckCircle className="w-8 h-8" />
@@ -317,19 +313,19 @@ export default function QuizGame({ game }: QuizGameProps) {
               </div>
 
               {!answerResult.isCorrect && (
-                <div className="mb-6 p-4 bg-green-50 border-l-4 border-green-400 rounded-r-lg">
-                  <p className="text-green-800 text-lg">
-                    <span className="font-semibold">Correct Answer: </span>
+                <div className="mb-6 p-4 bg-green-500/10 border-l-4 border-green-400 rounded-r-lg">
+                  <p className="text-green-200 text-lg">
+                    <span className="font-semibold text-green-300">Correct Answer: </span>
                     {answerResult.correctAnswer}
                   </p>
                 </div>
               )}
 
-              <div className="bg-gray-50 p-6 rounded-lg border-l-4 border-blue-400">
-                <h3 className="font-semibold mb-3 text-lg text-gray-800">
+              <div className="bg-white/5 p-6 rounded-lg border-l-4 border-blue-400">
+                <h3 className="font-semibold mb-3 text-lg text-white/90">
                   Explanation:
                 </h3>
-                <p className="text-gray-700 leading-relaxed text-lg">
+                <p className="text-white/80 leading-relaxed text-lg">
                   {answerResult.explanation}
                 </p>
               </div>
@@ -342,12 +338,12 @@ export default function QuizGame({ game }: QuizGameProps) {
             <Button
               onClick={handleSubmitAnswer}
               disabled={!selectedAnswer || isLoading}
-              className="px-12 py-4 text-lg font-semibold w-full sm:w-auto"
+              className="px-12 py-6 text-lg font-bold w-full sm:w-auto bg-white text-indigo-900 hover:bg-indigo-50 shadow-lg hover:shadow-xl transition-all rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
               size="lg"
             >
               {isLoading ? (
                 <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-900 mr-2"></div>
                   Checking...
                 </>
               ) : (
@@ -357,7 +353,7 @@ export default function QuizGame({ game }: QuizGameProps) {
           ) : (
             <Button
               onClick={handleNextQuestion}
-              className="px-12 py-4 text-lg font-semibold w-full sm:w-auto"
+              className="px-12 py-6 text-lg font-bold w-full sm:w-auto bg-white text-indigo-900 hover:bg-indigo-50 shadow-lg hover:shadow-xl transition-all rounded-full"
               size="lg"
             >
               {currentQuestionIndex < totalQuestions - 1
