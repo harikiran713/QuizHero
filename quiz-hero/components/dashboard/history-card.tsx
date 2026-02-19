@@ -1,4 +1,5 @@
 import { Clock, TrendingUp } from "lucide-react"
+import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -25,13 +26,15 @@ export default function HistoryCard() {
             <span className="text-white font-medium">Total Quizzes</span>
             <span className="text-2xl font-bold text-white">24</span>
           </div>
-          <Button
-            variant="outline"
-            className="w-full bg-white/10 text-white border-white/30 hover:bg-white/20 font-semibold py-3 backdrop-blur-sm"
-          >
-            <TrendingUp className="w-4 h-4 mr-2" />
-            View History
-          </Button>
+          <Link href="/history" className="w-full">
+            <Button
+              variant="outline"
+              className="w-full bg-white/10 text-white border-white/30 hover:bg-white/20 font-semibold py-3 backdrop-blur-sm"
+            >
+              <TrendingUp className="w-4 h-4 mr-2" />
+              View History
+            </Button>
+          </Link>
         </div>
       </CardContent>
     </Card>

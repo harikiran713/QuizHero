@@ -1,9 +1,9 @@
 node_modules
 .next
+.env
 .git
 .gitignore
+Dockerfile
 npm-debug.log
-
-*.md
-.env
-.env.local
+yarn.lock
+pnpm-lock.yaml

@@ -13,6 +13,7 @@ export async function POST(req: NextRequest) {
         { status: 401 }
       );
     }
+    console.log(process.env.GEMINI_API_KEY!)
 
     const body = await req.json();
     const { questions, topic, mode, difficulty } = body;
@@ -36,6 +37,7 @@ const { data } = await axios.post(`${baseUrl}/api/questions`, {
   count: questions,
   mode,
 });
+console.log(data)
 
 
     const manyData = data.questions.map((question: any) => {
