@@ -1,25 +1,49 @@
-# Install dependencies
-FROM node:18-alpine AS deps
-WORKDIR /app
-COPY package*.json ./
-RUN npm install --force
-
-# Build the Next.js app
+# ---- Build Stage ----
 FROM node:18-alpine AS builder
 WORKDIR /app
+
+# Copy package files
+COPY package.json package-lock.json ./
+
+# Install all dependencies
+RUN npm ci
+
+# Copy rest of project
 COPY . .
-COPY --from=deps /app/node_modules ./node_modules
+
+# Generate Prisma Client
+RUN npx prisma generate
+
+# Build Next.js
 RUN npm run build
 
-# Run production image
+
+# ---- Production Stage ----
 FROM node:18-alpine AS runner
 WORKDIR /app
-ENV NODE_ENV=production
 
-COPY --from=builder /app/public ./public
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
+
+# Copy package files
+COPY package.json package-lock.json ./
+
+# Install production dependencies
+RUN npm ci --omit=dev
+
+# Copy build output
 COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/prisma ./prisma
+
+# Copy only if you have next.config.ts (which you do)
+COPY --from=builder /app/next.config.ts ./next.config.ts
+
+# Prisma runtime files
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 
 EXPOSE 3000
+
 CMD ["npm", "start"]
