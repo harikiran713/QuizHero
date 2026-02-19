@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import UserAccountNav from "@/components/UserAccountNav";
 
+// Header2: Handles authentication state display
 export default function Header2() {
     const router = useRouter()
     const session = useSession()
