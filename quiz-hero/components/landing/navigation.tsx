@@ -1,7 +1,14 @@
 "use client";
 import React from "react";
+import { useSession } from "next-auth/react";
 
 export default function Navigation() {
+  const { data: session } = useSession();
+
+  if (session?.user) {
+    return null;
+  }
+
   const navItems = [
     { name: "Features", href: "#features" },
     { name: "How it works", href: "#how-it-works" },

@@ -12,6 +12,7 @@ interface Question {
     answer: string;
     userAnswer: string | null;
     isCorrect: boolean | null;
+    reason?: string | null;
 }
 
 interface Game {
@@ -88,6 +89,16 @@ export default function QuizReview({ game }: QuizReviewProps) {
                                 <span className="font-semibold">Your Answer:</span>{" "}
                                 {q.userAnswer || "Skipped"}
                             </div>
+                            {q.reason && (
+                                <div className="mt-4 p-4 bg-blue-50/50 rounded-lg border border-blue-100">
+                                    <h4 className="text-sm font-semibold text-blue-800 mb-2 flex items-center gap-2">
+                                        <span className="bg-blue-100 p-1 rounded">💡</span> Explanation
+                                    </h4>
+                                    <p className="text-sm text-gray-700 leading-relaxed">
+                                        {q.reason}
+                                    </p>
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
                 );
