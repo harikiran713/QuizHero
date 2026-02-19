@@ -3,12 +3,13 @@ import { Button } from "@/components/ui/button"
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import UserAccountNav from "@/components/UserAccountNav";
+
 export default function Header2() {
     const router = useRouter()
     const session = useSession()
-    return (
+
     if (session.status === "loading") {
-        return null; // or a skeleton loader
+        return null;
     }
 
     if (session.data?.user) {
@@ -31,7 +32,5 @@ export default function Header2() {
                     router.push('/auth/signin')
                 }}>Get Started</Button>
         </div>
-    );
-
     );
 }
