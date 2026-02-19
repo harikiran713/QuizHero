@@ -12,6 +12,8 @@ import {
     Trophy,
     LayoutList,
     Loader2,
+    LayoutDashboard,
+    ListChecks
 } from "lucide-react";
 
 interface Game {
@@ -55,90 +57,69 @@ export default function HistoryPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto">
                 <div className="flex items-center justify-between mb-8">
-                    <div className="flex items-center gap-3">
-                        <LayoutList className="w-8 h-8 text-white" />
-                        <h1 className="text-3xl font-bold text-white drop-shadow-md">Quiz History</h1>
-                    </div>
-                    <Link
-                        href="/dashboard"
-                        className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white font-medium backdrop-blur-sm transition-all border border-white/10"
-                    >
-                        Back to Dashboard
+                    <h1 className="text-3xl font-bold text-gray-900">Quiz History</h1>
+                    <Link href="/dashboard">
+                        <Button variant="outline" className="flex items-center gap-2">
+                            <LayoutDashboard className="w-4 h-4" />
+                            Dashboard
+                        </Button>
                     </Link>
                 </div>
 
-                {games.length === 0 ? (
-                    <Card className="backdrop-blur-md bg-white/10 border-white/20 shadow-xl text-white">
-                        <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-                            <Clock className="w-12 h-12 text-white/50 mb-4" />
-                            <h3 className="text-lg font-medium text-white">
-                                No quizzes played yet
-                            </h3>
-                            <p className="text-white/70 mt-1 max-w-sm">
-                                Start a quiz to see your history here!
-                            </p>
-                            <Link
-                                href="/dashboard"
-                                className="mt-6 px-6 py-2 bg-white text-purple-900 rounded-full font-bold hover:bg-gray-100 transition-colors shadow-lg"
-                            >
-                                Start Quiz
-                            </Link>
-                        </CardContent>
-                    </Card>
-                ) : (
-                    <div className="grid gap-4">
-                        {games.map((game) => (
+                <div className="space-y-4">
+                    {games.length === 0 ? (
+                        <Card className="bg-white border-gray-200 shadow-sm text-gray-800">
+                            <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+                                <Clock className="w-12 h-12 text-gray-400 mb-4" />
+                                <h3 className="text-lg font-medium text-gray-800">
+                                    No quizzes played yet
+                                </h3>
+                                <p className="text-gray-600 mt-1 max-w-sm">
+                                    Start a quiz to see your history here!
+                                </p>
+                                <Link
+                                    href="/dashboard"
+                                    className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-full font-bold hover:bg-blue-700 transition-colors shadow-lg"
+                                >
+                                    Start Quiz
+                                </Link>
+                            </CardContent>
+                        </Card>
+                    ) : (
+                        games.map((game: any) => (
                             <Link href={`/history/${game.id}`} key={game.id}>
-                                <Card className="hover:scale-[1.01] transition-all cursor-pointer backdrop-blur-md bg-white/10 border-white/20 shadow-lg hover:shadow-2xl hover:bg-white/15">
-                                    <CardContent className="p-6">
-                                        <div className="flex items-center justify-between">
-                                            <div className="space-y-1">
-                                                <div className="flex items-center gap-2">
-                                                    <h3 className="font-bold text-lg text-white">
-                                                        {game.topic}
-                                                    </h3>
-                                                    <Badge className="bg-white/20 hover:bg-white/30 text-white border-none">
-                                                        {game.difficulty}
-                                                    </Badge>
-                                                    <Badge variant="outline" className="text-white border-white/40">
-                                                        {game.gameType}
-                                                    </Badge>
+                                <Card className="hover:scale-[1.01] transition-all cursor-pointer hover:shadow-md bg-white border-gray-200">
+                                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                                        <CardTitle className="text-xl font-semibold text-gray-900">{game.topic}</CardTitle>
+                                        <div className="flex items-center gap-2">
+                                            {game.difficulty === 'easy' && <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Easy</Badge>}
+                                            {game.difficulty === 'medium' && <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Medium</Badge>}
+                                            {game.difficulty === 'hard' && <Badge className="bg-red-100 text-red-800 hover:bg-red-200">Hard</Badge>}
+                                        </div>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="flex items-center justify-between text-sm text-gray-500">
+                                            <div className="flex items-center gap-4">
+                                                <div className="flex items-center gap-1">
+                                                    <ListChecks className="w-4 h-4" />
+                                                    <span>{game.totalQuestions || game.questions?.length || 0} Questions</span>
                                                 </div>
-                                                <div className="flex items-center text-sm text-gray-300 gap-4">
-                                                    <div className="flex items-center gap-1">
-                                                        <Calendar className="w-4 h-4" />
-                                                        {new Date(game.timeStarted).toLocaleDateString()}
-                                                    </div>
-                                                    <div className="flex items-center gap-1">
-                                                        <Clock className="w-4 h-4" />
-                                                        {new Date(game.timeStarted).toLocaleTimeString([], {
-                                                            hour: "2-digit",
-                                                            minute: "2-digit",
-                                                        })}
-                                                    </div>
+                                                <div className="flex items-center gap-1">
+                                                    <Clock className="w-4 h-4" />
+                                                    <span>{new Date(game.timeStarted).toLocaleDateString()}</span>
                                                 </div>
                                             </div>
-
-                                            <div className="flex items-center gap-6">
-                                                <div className="text-right">
-                                                    <div className="flex items-center gap-1 text-emerald-400 font-bold text-lg drop-shadow-sm">
-                                                        <Trophy className="w-5 h-5" />
-                                                        {game.score} / {game.totalQuestions}
-                                                    </div>
-                                                    <p className="text-xs text-gray-300">Score</p>
-                                                </div>
-                                                <ChevronRight className="w-5 h-5 text-white/50" />
-                                            </div>
+                                            <ChevronRight className="w-5 h-5 text-gray-400" />
                                         </div>
                                     </CardContent>
                                 </Card>
                             </Link>
-                        ))}
-                    </div>
-                )}
+                        ))
+                    )}
+                </div>
             </div>
         </div>
     );

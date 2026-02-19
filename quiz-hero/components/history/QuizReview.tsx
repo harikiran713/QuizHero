@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, XCircle } from "lucide-react";
+import { CheckCircle, XCircle, CheckCircle2 } from "lucide-react";
 
 interface Question {
     id: string;
@@ -29,80 +29,67 @@ interface QuizReviewProps {
 export default function QuizReview({ game }: QuizReviewProps) {
     return (
         <div className="space-y-8">
-            {game.questions.map((q, index) => {
-                const options =
-                    typeof q.options === "string"
-                        ? JSON.parse(q.options)
-                        : (q.options as string[]);
-
-                return (
-                    <Card key={q.id} className="backdrop-blur-md bg-white/10 border-white/20 shadow-xl text-white transition-all">
-                        <CardHeader className="pb-2">
-                            <div className="flex items-center justify-between">
-                                <CardTitle className="text-lg font-medium text-white">
-                                    Question {index + 1}
-                                </CardTitle>
-                                {q.isCorrect ? (
-                                    <Badge className="bg-green-500/20 text-green-300 border border-green-500/50 flex gap-1 hover:bg-green-500/30">
-                                        <CheckCircle className="w-3 h-3" /> Correct
-                                    </Badge>
-                                ) : (
-                                    <Badge variant="destructive" className="bg-red-500/20 text-red-300 border border-red-500/50 flex gap-1 hover:bg-red-500/30">
-                                        <XCircle className="w-3 h-3" /> Incorrect
-                                    </Badge>
-                                )}
+            {game.questions.map((q, index) => (
+                <Card key={q.id} className="w-full bg-white border-gray-200 shadow-xl transition-all">
+                    <CardHeader className="flex flex-row items-center">
+                        <CardTitle className="mr-5 text-center divide-y divide-gray-200">
+                            <div className="text-gray-900">{index + 1}</div>
+                            <div className="text-base text-gray-500">
+                                {game.questions.length}
                             </div>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-white/90 font-medium mb-4 text-lg leading-relaxed">{q.question}</p>
-                            <div className="space-y-3">
-                                {options.map((option: string, optIndex: number) => {
-                                    const isUserSelected = q.userAnswer === option;
-                                    const isCorrectAnswer = q.answer === option;
+                        </CardTitle>
+                        <CardDescription className="flex-grow text-lg text-gray-800 font-medium">
+                            {q.question}
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid gap-4">
+                            {Array.isArray(JSON.parse(q.options as string)) &&
+                                JSON.parse(q.options as string).map((option: string, i: number) => {
+                                    let optionColor = 'bg-gray-100 border-gray-200';
+                                    let textColor = 'text-gray-700';
 
-                                    let optionStyle = "border-white/10 bg-white/5 hover:bg-white/10 text-white/80";
-                                    if (isCorrectAnswer) {
-                                        optionStyle = "border-green-500/50 bg-green-500/20 ring-1 ring-green-500/50 text-white";
-                                    } else if (isUserSelected && !isCorrectAnswer) {
-                                        optionStyle = "border-red-500/50 bg-red-500/20 ring-1 ring-red-500/50 text-white";
+                                    if (q.userAnswer === option) {
+                                        if (q.isCorrect) {
+                                            optionColor = 'bg-green-100 border-green-500';
+                                            textColor = 'text-green-800 font-semibold';
+                                        } else {
+                                            optionColor = 'bg-red-100 border-red-500';
+                                            textColor = 'text-red-800 font-semibold';
+                                        }
+                                    } else if (q.answer === option) {
+                                        optionColor = 'bg-green-100 border-green-500';
+                                        textColor = 'text-green-800 font-semibold';
                                     }
 
                                     return (
                                         <div
-                                            key={optIndex}
-                                            className={`p-4 rounded-xl border flex items-center justify-between transition-all ${optionStyle}`}
+                                            key={i}
+                                            className={`p-3 rounded-lg border-2 ${optionColor} ${textColor} flex items-center justify-between`}
                                         >
-                                            <span className="text-sm font-medium">
-                                                {option}
-                                            </span>
-                                            {isCorrectAnswer && (
-                                                <CheckCircle className="w-5 h-5 text-green-400" />
-                                            )}
-                                            {isUserSelected && !isCorrectAnswer && (
-                                                <XCircle className="w-5 h-5 text-red-400" />
-                                            )}
+                                            {option}
+                                            {q.userAnswer === option && !q.isCorrect && <XCircle className="w-5 h-5 text-red-600" />}
+                                            {q.answer === option && <CheckCircle2 className="w-5 h-5 text-green-600" />}
+                                            {q.userAnswer === option && q.isCorrect && <CheckCircle2 className="w-5 h-5 text-green-600" />}
                                         </div>
                                     );
                                 })}
+                        </div>
+
+                        {/* Explanation Section */}
+                        {q.reason && (
+                            <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-100">
+                                <h4 className="text-sm font-semibold text-blue-800 mb-2 flex items-center gap-2">
+                                    <span className="bg-blue-100 p-1 rounded">💡</span> Explanation
+                                </h4>
+                                <p className="text-sm text-gray-700 leading-relaxed">
+                                    {q.reason}
+                                </p>
                             </div>
-                            <div className="mt-6 p-4 bg-white/5 rounded-lg border border-white/10 text-sm text-white/70">
-                                <span className="font-semibold text-white/90">Your Answer:</span>{" "}
-                                {q.userAnswer || "Skipped"}
-                            </div>
-                            {q.reason && (
-                                <div className="mt-4 p-4 bg-blue-500/10 rounded-lg border border-blue-500/20">
-                                    <h4 className="text-sm font-semibold text-blue-300 mb-2 flex items-center gap-2">
-                                        <span className="bg-blue-500/20 p-1 rounded text-blue-300">💡</span> Explanation
-                                    </h4>
-                                    <p className="text-sm text-white/80 leading-relaxed">
-                                        {q.reason}
-                                    </p>
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
-                );
-            })}
+                        )}
+                    </CardContent>
+                </Card>
+            ))}
         </div>
     );
 }

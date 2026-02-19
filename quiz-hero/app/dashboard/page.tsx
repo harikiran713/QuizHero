@@ -17,7 +17,7 @@ export default async function Dashboard() {
         return redirect('/')
     }
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 p-6">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-6">
             <div className="max-w-6xl mx-auto">
                 <Header />
                 <div className="py-12"> <DashboardGrid /></div>

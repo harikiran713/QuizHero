@@ -8,7 +8,7 @@ import Temp from "./temp"
 export default function QuizCard() {
 
   return (
-    <Card className="cursor-pointer group relative overflow-hidden border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 backdrop-blur-md bg-white/10 hover:bg-white/15">
+    <Card className="cursor-pointer group relative overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-700">
       <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-transparent"></div>
       <CardHeader className="relative z-10 text-white pb-4">
         <div className="flex items-center justify-between">
