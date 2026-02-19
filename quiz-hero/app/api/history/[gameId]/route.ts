@@ -5,7 +5,7 @@ import prisma from "@/lib/db";
 
 export async function GET(
     req: NextRequest,
-    { params }: { params: { gameId: string } }
+    context: { params: Promise<{ gameId: string }> }
 ) {
     try {
         const session = await getServerSession(authOptions);
@@ -16,7 +16,8 @@ export async function GET(
                 { status: 401 }
             );
         }
-        const gameId = params.gameId;
+        const { gameId } = await context.params;
+
 
         const game = await prisma.game.findUnique({
             where: {
