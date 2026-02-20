@@ -4,6 +4,7 @@ import type React from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -19,7 +20,7 @@ export default function QuizCreation() {
   type QuizData = {
     topic: string;
     questions: number;
-    mode: "general" | "neet" | "upsc" | "jee_inorganic";
+    mode: "general" | "neet" | "upsc" | "jee_inorganic" | "gate";
     difficulty: "easy" | "medium" | "hard";
   };
 
@@ -37,6 +38,7 @@ export default function QuizCreation() {
     { value: "neet", label: "NEET", icon: FlaskConical, description: "Medical entrance exam prep" },
     { value: "upsc", label: "UPSC", icon: GraduationCap, description: "Civil services preparation" },
     { value: "jee_inorganic", label: "JEE Inorganic", icon: BookOpen, description: "JEE inorganic chemistry" },
+    { value: "gate", label: "GATE Exam", icon: GraduationCap, description: "Graduate Aptitude Test in Engineering" },
   ];
 
   const difficulties = [
@@ -99,7 +101,7 @@ export default function QuizCreation() {
                 max="50"
                 value={formData.questions}
                 onChange={(e) =>
-                  setFormData({ ...formData, questions: Number(e.target.value) }) 
+                  setFormData({ ...formData, questions: Number(e.target.value) })
                 }
                 className="text-base h-12"
               />
@@ -113,7 +115,7 @@ export default function QuizCreation() {
               <RadioGroup
                 value={formData.mode}
                 onValueChange={(value) =>
-                  setFormData({ ...formData, mode: value as QuizData["mode"] }) 
+                  setFormData({ ...formData, mode: value as QuizData["mode"] })
                 }
                 className="grid grid-cols-1 md:grid-cols-2 gap-4"
               >
@@ -143,7 +145,7 @@ export default function QuizCreation() {
               <Select
                 value={formData.difficulty}
                 onValueChange={(value) =>
-                  setFormData({ ...formData, difficulty: value as QuizData["difficulty"] }) 
+                  setFormData({ ...formData, difficulty: value as QuizData["difficulty"] })
                 }
               >
                 <SelectTrigger className="h-12 text-base">
@@ -179,7 +181,14 @@ export default function QuizCreation() {
                 !formData.difficulty
               }
             >
-              {isLoading ? "Creating..." : "Create Quiz"}
+              {isLoading ? (
+                <div className="flex items-center gap-2">
+                  <LoadingSpinner className="h-5 w-5" />
+                  <span>Creating...</span>
+                </div>
+              ) : (
+                "Create Quiz"
+              )}
             </Button>
           </form>
         </CardContent>
