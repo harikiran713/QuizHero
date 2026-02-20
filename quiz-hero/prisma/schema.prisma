@@ -73,6 +73,7 @@ enum GameType{
   neet
   upsc
   jee_inorganic
+  gate
 }
 model Game {
   id          String     @id @default(cuid())

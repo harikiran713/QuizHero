@@ -53,8 +53,12 @@ export async function POST(req: NextRequest) {
     console.log("this is from server ")
     console.log(game.id)
     return NextResponse.json({ success: true, gameId: game.id });
-  } catch (error) {
+  } catch (error: any) {
+    const message = error?.message ?? "Unknown error";
     console.error("Error creating game or fetching questions:", error);
-    return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Something went wrong", detail: message },
+      { status: 500 }
+    );
   }
 }
