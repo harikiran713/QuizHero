@@ -181,18 +181,11 @@ export default function QuizCreation() {
                 !formData.difficulty
               }
             >
-              {isLoading ? (
-                <div className="flex items-center gap-2">
-                  <LoadingSpinner className="h-5 w-5" />
-                  <span>Creating...</span>
-                </div>
-              ) : (
-                "Create Quiz"
-              )}
+              Create Quiz
             </Button>
           </form>
         </CardContent>
       </Card>
-    </div>
+    </div >
   );
 }

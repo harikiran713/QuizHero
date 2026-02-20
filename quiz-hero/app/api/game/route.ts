@@ -2,7 +2,7 @@ import prisma from "@/lib/db";
 import { getServerSession } from "next-auth";
 import authoptions from "@/lib/authOptions";
 import { NextRequest, NextResponse } from "next/server";
-import axios from "axios";
+import { generateQuizQuestions } from "@/lib/gemini";
 
 export async function POST(req: NextRequest) {
   try {
@@ -28,16 +28,13 @@ export async function POST(req: NextRequest) {
       },
     });
 
-const baseUrl =
-  process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-
-const { data } = await axios.post(`${baseUrl}/api/questions`, {
-  topic,
-  level: difficulty,
-  count: questions,
-  mode,
-});
-console.log(data)
+    const data = await generateQuizQuestions({
+      topic,
+      level: difficulty,
+      count: questions,
+      mode,
+    });
+    console.log(data)
 
 
     const manyData = data.questions.map((question: any) => {
@@ -50,13 +47,13 @@ console.log(data)
         options: JSON.stringify(options),
         gameId: game.id,
         questionType: mode,
-        reason:question.reason
+        reason: question.reason
       };
     });
 
     await prisma.question.createMany({ data: manyData });
-console.log("this is from server ")
-console.log(game.id)
+    console.log("this is from server ")
+    console.log(game.id)
     return NextResponse.json({ success: true, gameId: game.id });
   } catch (error) {
     console.error("Error creating game or fetching questions:", error);
