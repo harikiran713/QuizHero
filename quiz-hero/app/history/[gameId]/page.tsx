@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, ArrowLeft, Clock, Calendar, Trophy, ChevronLeft } from "lucide-react";
 import QuizReview from "@/components/history/QuizReview";
 import Link from "next/link";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 interface GameDetails {
     id: string;
@@ -46,7 +47,7 @@ export default function HistoryDetailPage() {
     if (isLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <Loader2 className="w-10 h-10 animate-spin text-blue-600" />
+                <LoadingSpinner />
             </div>
         );
     }
