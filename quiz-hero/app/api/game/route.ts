@@ -13,8 +13,6 @@ export async function POST(req: NextRequest) {
         { status: 401 }
       );
     }
-    console.log(process.env.GEMINI_API_KEY!)
-
     const body = await req.json();
     const { questions, topic, mode, difficulty } = body;
 

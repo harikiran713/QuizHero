@@ -1,8 +1,20 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-console.log(process.env.GEMINI_API_KEY!);
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+// Lazy initialization: avoid constructing at module-load time so that
+// Vercel serverless env vars are reliably available on the first call.
+let _model: ReturnType<GoogleGenerativeAI["getGenerativeModel"]> | null = null;
+
+function getModel() {
+    if (!_model) {
+        const apiKey = process.env.GEMINI_API_KEY;
+        if (!apiKey) {
+            throw new Error("GEMINI_API_KEY environment variable is not set.");
+        }
+        const genAI = new GoogleGenerativeAI(apiKey);
+        _model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    }
+    return _model;
+}
 
 type Difficulty = "easy" | "medium" | "hard";
 
@@ -79,7 +91,7 @@ function isValidJSONResponse(data: any): boolean {
 async function askWithRetry(systemPrompt: string, userPrompt: string, retries = 3): Promise<any> {
     for (let i = 0; i < retries; i++) {
         try {
-            const result = await model.generateContent({
+            const result = await getModel().generateContent({
                 contents: [{ role: "user", parts: [{ text: systemPrompt + "\n\n" + userPrompt }] }],
                 generationConfig: {
                     responseMimeType: "application/json",
