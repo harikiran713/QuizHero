@@ -32,6 +32,7 @@ export default function QuizCreation() {
   });
 
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const modes = [
     { value: "general", label: "General", icon: Brain, description: "General knowledge topics" },
@@ -50,13 +51,18 @@ export default function QuizCreation() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setErrorMsg(null);
 
     try {
       const response = await axios.post(`/api/game`, formData);
       console.log(response.data);
       router.push(`/play/${response.data.gameId}`);
-    } catch (error) {
+    } catch (error: any) {
+      const detail = error?.response?.data?.detail ?? "";
+      const failedAt = error?.response?.data?.failedAt ?? "";
+      const msg = `Error at [${failedAt}]: ${detail || error.message}`;
       console.error("Error creating quiz:", error);
+      setErrorMsg(msg);
     } finally {
       setIsLoading(false);
     }
@@ -183,6 +189,11 @@ export default function QuizCreation() {
             >
               Create Quiz
             </Button>
+            {errorMsg && (
+              <div className="mt-3 rounded-lg bg-red-50 border border-red-200 p-3 text-sm text-red-700 break-words">
+                <strong>Error:</strong> {errorMsg}
+              </div>
+            )}
           </form>
         </CardContent>
       </Card>
