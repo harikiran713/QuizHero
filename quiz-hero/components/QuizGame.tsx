@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { MathText } from "@/components/ui/math-text";
 import {
   CheckCircle,
   XCircle,
@@ -248,7 +249,7 @@ export default function QuizGame({ game }: QuizGameProps) {
               </span>
             </div>
             <h2 className="text-2xl font-medium mb-8 leading-relaxed">
-              {currentQuestion.question}
+              <MathText text={currentQuestion.question} />
             </h2>
 
             <div className="space-y-4">
@@ -256,8 +257,8 @@ export default function QuizGame({ game }: QuizGameProps) {
                 <Card
                   key={index}
                   className={`cursor-pointer border-2 ${selectedAnswer === option
-                      ? "ring-2 ring-blue-500 bg-blue-50 border-blue-200"
-                      : "hover:bg-gray-50 border-gray-200"
+                    ? "ring-2 ring-blue-500 bg-blue-50 border-blue-200"
+                    : "hover:bg-gray-50 border-gray-200"
                     } ${showResult && answerResult?.correctAnswer === option
                       ? "ring-2 ring-green-500 bg-green-50 border-green-200"
                       : showResult &&
@@ -272,19 +273,19 @@ export default function QuizGame({ game }: QuizGameProps) {
                     <div className="flex items-center gap-4 w-full">
                       <div
                         className={`flex-shrink-0 w-10 h-10 rounded-full border-2 flex items-center justify-center text-lg font-bold ${showResult && answerResult?.correctAnswer === option
-                            ? "border-green-500 bg-green-500 text-white"
-                            : showResult &&
-                              selectedAnswer === option &&
-                              !answerResult?.isCorrect
-                              ? "border-red-500 bg-red-500 text-white"
-                              : selectedAnswer === option
-                                ? "border-blue-500 bg-blue-500 text-white"
-                                : "border-gray-300 text-gray-600"
+                          ? "border-green-500 bg-green-500 text-white"
+                          : showResult &&
+                            selectedAnswer === option &&
+                            !answerResult?.isCorrect
+                            ? "border-red-500 bg-red-500 text-white"
+                            : selectedAnswer === option
+                              ? "border-blue-500 bg-blue-500 text-white"
+                              : "border-gray-300 text-gray-600"
                           }`}
                       >
                         {String.fromCharCode(65 + index)}
                       </div>
-                      <span className="text-gray-800 text-lg">{option}</span>
+                      <span className="text-gray-800 text-lg"><MathText text={option} /></span>
                     </div>
                   </CardContent>
                 </Card>
@@ -316,7 +317,9 @@ export default function QuizGame({ game }: QuizGameProps) {
                 <div className="mb-6 p-4 bg-green-50 border-l-4 border-green-400 rounded-r-lg">
                   <p className="text-green-800 text-lg">
                     <span className="font-semibold">Correct Answer: </span>
-                    {answerResult.correctAnswer}
+                    {answerResult.correctAnswer && (
+                      <MathText text={answerResult.correctAnswer} />
+                    )}
                   </p>
                 </div>
               )}
@@ -326,7 +329,7 @@ export default function QuizGame({ game }: QuizGameProps) {
                   Explanation:
                 </h3>
                 <p className="text-gray-700 leading-relaxed text-lg">
-                  {answerResult.explanation}
+                  <MathText text={answerResult.explanation} />
                 </p>
               </div>
             </CardContent>
