@@ -7,6 +7,14 @@ import { generateQuizQuestions } from "@/lib/gemini";
 export async function POST(req: NextRequest) {
   let step = "parse_request";
   try {
+    // Explicit API key check so we get a clear error, not a cryptic one
+    if (!process.env.GEMINI_API_KEY) {
+      return NextResponse.json(
+        { error: "Server misconfiguration", failedAt: "env_check", detail: "GEMINI_API_KEY is not set on the server." },
+        { status: 500 }
+      );
+    }
+
     const session = await getServerSession(authoptions);
     if (!session?.user) {
       return NextResponse.json(
@@ -18,7 +26,16 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { questions, topic, mode, difficulty } = body;
 
-    // Step 1: Create game in DB
+    // Step 1: Call Gemini FIRST — if it fails, nothing is written to DB
+    step = "call_gemini_api";
+    const data = await generateQuizQuestions({
+      topic,
+      level: difficulty,
+      count: questions,
+      mode,
+    });
+
+    // Step 2: Create game in DB only after questions are ready
     step = "create_game_in_db";
     const game = await prisma.game.create({
       data: {
@@ -28,15 +45,6 @@ export async function POST(req: NextRequest) {
         userId: session.user.id,
         topic,
       },
-    });
-
-    // Step 2: Generate questions via Gemini
-    step = "call_gemini_api";
-    const data = await generateQuizQuestions({
-      topic,
-      level: difficulty,
-      count: questions,
-      mode,
     });
 
     // Step 3: Save questions to DB
