@@ -4,6 +4,7 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, XCircle, CheckCircle2 } from "lucide-react";
+import { MathText } from "@/components/ui/math-text";
 
 interface Question {
     id: string;
@@ -39,7 +40,7 @@ export default function QuizReview({ game }: QuizReviewProps) {
                             </div>
                         </CardTitle>
                         <CardDescription className="flex-grow text-lg text-gray-800 font-medium">
-                            {q.question}
+                            <MathText text={q.question} />
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -67,7 +68,7 @@ export default function QuizReview({ game }: QuizReviewProps) {
                                             key={i}
                                             className={`p-3 rounded-lg border-2 ${optionColor} ${textColor} flex items-center justify-between`}
                                         >
-                                            {option}
+                                            <MathText text={option} />
                                             {q.userAnswer === option && !q.isCorrect && <XCircle className="w-5 h-5 text-red-600" />}
                                             {q.answer === option && <CheckCircle2 className="w-5 h-5 text-green-600" />}
                                             {q.userAnswer === option && q.isCorrect && <CheckCircle2 className="w-5 h-5 text-green-600" />}
@@ -83,7 +84,7 @@ export default function QuizReview({ game }: QuizReviewProps) {
                                     <span className="bg-blue-100 p-1 rounded">💡</span> Explanation
                                 </h4>
                                 <p className="text-sm text-gray-700 leading-relaxed">
-                                    {q.reason}
+                                    <MathText text={q.reason ?? ""} />
                                 </p>
                             </div>
                         )}
