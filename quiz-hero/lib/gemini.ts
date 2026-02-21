@@ -144,3 +144,67 @@ export async function generateQuizQuestions({ topic, level, count, mode = "gener
 
     return await askWithRetry(systemPrompt, userPrompt);
 }
+
+export async function generateFromImage({
+    imageBase64,
+    mimeType,
+    count,
+    level,
+    mode = "general",
+}: {
+    imageBase64: string;
+    mimeType: string;
+    count: number;
+    level: Difficulty;
+    mode?: string;
+}) {
+    if (count < 1 || count > 50) throw new Error("Number of questions must be between 1 and 50.");
+    if (!['easy', 'medium', 'hard'].includes(level)) throw new Error("Invalid difficulty level.");
+
+    const systemPrompt = SYSTEM_PROMPTS[mode] ?? SYSTEM_PROMPTS["general"];
+
+    const userPrompt = `
+Carefully analyze the content in the provided image (it may be a textbook page, notes, diagram, or code).
+Extract the key concepts, facts, and topics shown in the image.
+Then generate exactly ${count} ${level}-level multiple choice questions (MCQs) based ONLY on the content visible in the image.
+
+${formatPrompt("the image content", level, count)}
+`;
+
+    for (let i = 0; i < 3; i++) {
+        try {
+            const result = await getModel().generateContent({
+                contents: [
+                    {
+                        role: "user",
+                        parts: [
+                            { text: systemPrompt + "\n\n" + userPrompt },
+                            {
+                                inlineData: {
+                                    mimeType,
+                                    data: imageBase64,
+                                },
+                            },
+                        ],
+                    },
+                ],
+                generationConfig: {
+                    responseMimeType: "application/json",
+                },
+            });
+
+            const content = result.response.text().trim();
+            let clean = content;
+            if (clean.startsWith("```json")) clean = clean.replace(/^```json\s*/, "").replace(/\s*```$/, "");
+            else if (clean.startsWith("```")) clean = clean.replace(/^```\s*/, "").replace(/\s*```$/, "");
+
+            const json = JSON.parse(clean);
+            if (isValidJSONResponse(json)) return json;
+            throw new Error("Invalid JSON structure from Gemini Vision.");
+        } catch (e: any) {
+            if (i === 2) throw new Error(`Gemini Vision failed after 3 retries: ${e.message}`);
+            await new Promise(r => setTimeout(r, 1000 * Math.pow(2, i)));
+        }
+    }
+    throw new Error("Gemini Vision loop unexpectedly ended.");
+}
