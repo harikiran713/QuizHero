@@ -3,6 +3,7 @@
 import { useIsFetching, useIsMutating } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
+import { LoadingSpinner } from "./loading-spinner";
 
 export function GlobalLoader() {
     const isFetching = useIsFetching();
@@ -16,7 +17,7 @@ export function GlobalLoader() {
         let timeout: NodeJS.Timeout;
         if (active) {
             // Small delay to prevent flickering for near-instant requests
-            timeout = setTimeout(() => setShow(true), 200);
+            timeout = setTimeout(() => setShow(true), 150);
         } else {
             setShow(false);
         }
@@ -27,24 +28,22 @@ export function GlobalLoader() {
         <AnimatePresence>
             {show && (
                 <motion.div
-                    initial={{ opacity: 0, scaleX: 0 }}
-                    animate={{ opacity: 1, scaleX: 1 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 z-[9999] origin-left"
-                    style={{ boxShadow: "0 0 10px rgba(59, 130, 246, 0.5)" }}
+                    className="fixed inset-0 flex items-center justify-center bg-white/40 backdrop-blur-[1px] z-[9999]"
                 >
                     <motion.div
-                        animate={{
-                            x: ["0%", "100%"],
-                        }}
-                        transition={{
-                            duration: 1.5,
-                            repeat: Infinity,
-                            ease: "linear",
-                        }}
-                        className="absolute top-0 left-0 w-1/3 h-full bg-white/30 skew-x-[-20deg]"
-                    />
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.8, opacity: 0 }}
+                        className="bg-white p-6 rounded-2xl shadow-2xl border border-gray-100 flex flex-col items-center gap-4"
+                    >
+                        <LoadingSpinner />
+                        <p className="text-sm font-medium text-gray-500 animate-pulse">
+                            Processing...
+                        </p>
+                    </motion.div>
                 </motion.div>
             )}
         </AnimatePresence>
