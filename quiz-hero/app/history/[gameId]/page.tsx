@@ -6,7 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Loader2, ArrowLeft, Clock, Calendar, Trophy, ChevronLeft } from "lucide-react";
-import QuizReview from "@/components/history/QuizReview";
+import dynamic from "next/dynamic";
+const QuizReview = dynamic(() => import("@/components/history/QuizReview"), {
+    loading: () => <div className="py-12 flex justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+    </div>,
+});
 import Link from "next/link";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
@@ -19,30 +24,22 @@ interface GameDetails {
     questions: any[];
 }
 
+import { useQuery } from "@tanstack/react-query";
+
 export default function HistoryDetailPage() {
     const { gameId } = useParams();
-    const [game, setGame] = useState<GameDetails | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        if (!gameId) return;
+    const { data: gameData, isLoading } = useQuery({
+        queryKey: ["game", gameId],
+        queryFn: async () => {
+            const response = await fetch(`/api/history/${gameId}`);
+            if (!response.ok) throw new Error("Failed to fetch game details");
+            return response.json();
+        },
+        enabled: !!gameId,
+    });
 
-        const fetchGameDetails = async () => {
-            try {
-                const response = await fetch(`/api/history/${gameId}`);
-                const data = await response.json();
-                if (data.game) {
-                    setGame(data.game);
-                }
-            } catch (error) {
-                console.error("Failed to fetch game details:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchGameDetails();
-    }, [gameId]);
+    const game = gameData?.game;
 
     if (isLoading) {
         return (
@@ -63,7 +60,7 @@ export default function HistoryDetailPage() {
         );
     }
 
-    const correctAnswers = game.questions ? game.questions.filter((q) => q.isCorrect).length : 0;
+    const correctAnswers = game.questions ? game.questions.filter((q: any) => q.isCorrect).length : 0;
     const totalQuestions = game.questions ? game.questions.length : 0;
     const scorePercentage = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
 

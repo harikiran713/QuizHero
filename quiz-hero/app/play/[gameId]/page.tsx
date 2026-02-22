@@ -2,7 +2,12 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import authOptions from "@/lib/authOptions";
 import prisma from "@/lib/db";
-import QuizGame from "@/components/QuizGame";
+import dynamic from "next/dynamic";
+const QuizGame = dynamic(() => import("@/components/QuizGame"), {
+  loading: () => <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+  </div>,
+});
 
 export default async function GamePage({ params }: any) {
   const x = await params

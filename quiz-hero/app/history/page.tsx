@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import {
     Clock,
@@ -28,48 +29,27 @@ interface Game {
 }
 
 export default function HistoryPage() {
-    const [games, setGames] = useState<Game[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [page, setPage] = useState(1);
-    const [hasMore, setHasMore] = useState(true);
-    const [isFetchingMore, setIsFetchingMore] = useState(false);
+    const {
+        data,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+        isLoading
+    } = useInfiniteQuery({
+        queryKey: ["history"],
+        queryFn: async ({ pageParam = 1 }) => {
+            const response = await fetch(`/api/history?page=${pageParam}&limit=10`);
+            if (!response.ok) throw new Error("Failed to fetch history");
+            return response.json();
+        },
+        initialPageParam: 1,
+        getNextPageParam: (lastPage: any, allPages: any) => {
+            if (lastPage.games.length < 10) return undefined;
+            return allPages.length + 1;
+        },
+    });
 
-    const fetchHistory = async (pageToFetch: number, isInitial = false) => {
-        try {
-            if (isInitial) setIsLoading(true);
-            else setIsFetchingMore(true);
-
-            const response = await fetch(`/api/history?page=${pageToFetch}&limit=10`);
-            const data = await response.json();
-
-            if (data.games) {
-                if (data.games.length < 10) {
-                    setHasMore(false);
-                }
-
-                if (isInitial) {
-                    setGames(data.games);
-                } else {
-                    setGames(prev => [...prev, ...data.games]);
-                }
-            }
-        } catch (error) {
-            console.error("Failed to fetch history:", error);
-        } finally {
-            setIsLoading(false);
-            setIsFetchingMore(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchHistory(1, true);
-    }, []);
-
-    const handleLoadMore = () => {
-        const nextPage = page + 1;
-        setPage(nextPage);
-        fetchHistory(nextPage);
-    };
+    const games = data?.pages.flatMap((page: any) => page.games) ?? [];
 
     if (isLoading) {
         return (
@@ -144,15 +124,15 @@ export default function HistoryPage() {
                     )}
                 </div>
 
-                {hasMore && games.length > 0 && (
+                {hasNextPage && games.length > 0 && (
                     <div className="mt-8 flex justify-center">
                         <Button
-                            onClick={handleLoadMore}
-                            disabled={isFetchingMore}
+                            onClick={() => fetchNextPage()}
+                            disabled={isFetchingNextPage}
                             variant="outline"
                             className="bg-white"
                         >
-                            {isFetchingMore ? (
+                            {isFetchingNextPage ? (
                                 <>
                                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                                     Loading...
