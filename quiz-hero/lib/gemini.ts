@@ -27,19 +27,19 @@ interface QuizRequest {
 
 const SYSTEM_PROMPTS: Record<string, string> = {
     gate: `
-You are an expert GATE (Graduate Aptitude Test in Engineering) exam setter. Generate high-quality, concept-heavy multiple-choice questions (MCQs) based on the given topic. Prioritize questions from previous years' GATE papers or questions of similar standard and difficulty. Focus on testing deep technical understanding, problem-solving skills, and application of concepts. Ensure the questions are rigorous and strictly follow the GATE exam pattern. Avoid trivial or purely factual questions unless typical for the topic in GATE.
+You are an expert GATE (Graduate Aptitude Test in Engineering) exam setter. Generate high-quality, concept-heavy multiple-choice questions (MCQs). For every question, you MUST provide a detailed, step-by-step derivation or logical reasoning in the explanation. Prioritize testing deep technical understanding and application of engineering principles.
 `,
     neet: `
-You are a NEET Biology subject matter expert. Generate high-quality, concept-driven multiple-choice questions (MCQs) that strictly follow the NEET (UG) exam pattern, based on NCERT Biology textbooks (Class 11 & 12). Incorporate conceptual insights and trends from previous year NEET question papers. Focus on creating original questions that test deep understanding. Prioritize clarity, accuracy, and biological reasoning. Avoid any factual errors or content outside the NCERT scope. Ensure high diversity across subtopics like Human Physiology, Plant Physiology, Genetics, Ecology, Reproduction, and Biotechnology. Do not include general knowledge or trivia. Every question must be biologically sound and aligned with NEET standards.
+You are a NEET Biology subject matter expert. Generate high-quality MCQs based on NCERT Biology (Class 11 & 12). For every question, the explanation must not just state the fact but explain the underlying biological mechanism or reasoning, ensuring it aligns perfectly with NCERT concepts.
 `,
     upsc: `
-You are an expert quiz generator for UPSC preparation. Use NCERTs and standard UPSC sources like Laxmikant, Spectrum, and Ramesh Singh. Focus on conceptual and analytical MCQs that align with UPSC level. Avoid trivial facts. Match the requested difficulty.
+You are an expert quiz generator for UPSC preparation. Use NCERTs and standard UPSC sources. Focus on conceptual and analytical MCQs. The explanation should provide context, historical/legal background where applicable, and a clear reason why the correct option is right and others are less suitable.
 `,
     jee_inorganic: `
-You are an expert in Inorganic Chemistry for competitive exams like JEE Main and NEET. Analyze the given topic using NCERT (Class 11 and 12) as the primary reference, and enrich it with insights from JD Lee, OP Tandon, and VK Jaiswal. Focus on generating high-quality multiple-choice questions (MCQs) based specifically on important chemical reactions, exceptions (e.g., abnormal oxidation states, bonding, reactivity trends), and related concepts. The MCQs must strictly match the level and pattern of JEE/NEET/State CETs. Ensure maximum depth and completeness.
+You are an expert in Inorganic Chemistry for competitive exams like JEE Main and NEET. Focus on chemical reactions, exceptions (abnormal oxidation states, bonding, reactivity trends), and related concepts. For every explanation, provide the specific chemical logic (e.g., Fajan's rule, inert pair effect, shielding) that determines the answer.
 `,
     general: `
-You are an academic quiz generator. Generate multiple choice questions (MCQs) for any topic given by the user. Ensure accuracy, clear wording, and level-appropriate questions. Match the requested difficulty (easy, medium, hard).
+You are an academic quiz generator. Ensure accuracy and clear wording. For every question, provide a pedagologically sound explanation that helps the student learn the concept, providing step-by-step solutions for mathematical or logical problems.
 `,
 };
 
@@ -54,7 +54,7 @@ Each question must follow this JSON structure precisely:
   "option1": "First incorrect option. Wrap math in '$' if needed.",
   "option2": "Second incorrect option. Wrap math in '$' if needed.",
   "option3": "Third incorrect option. Wrap math in '$' if needed.",
-  "reason": "A clear, concise explanation. IMPORTANT: All math/formulas MUST be wrapped in '$' or '$$'."
+  "reason": "A detailed, step-by-step pedagogical explanation. For numericals, show the full calculation. For concepts, explain the 'why' and clear up potential confusion. Wrap all math in '$' or '$$'."
 }
 
 Output strictly in the following final JSON format, with no markdown or extra text:
@@ -164,9 +164,10 @@ export async function generateFromImage({
     const systemPrompt = SYSTEM_PROMPTS[mode] ?? SYSTEM_PROMPTS["general"];
 
     const userPrompt = `
-Carefully analyze the content in the provided image (it may be a textbook page, notes, diagram, or code).
-Extract the key concepts, facts, and topics shown in the image.
-Then generate exactly ${count} ${level}-level multiple choice questions (MCQs) based ONLY on the content visible in the image.
+Carefully analyze the content in the provided image (textbook pages, handwritten notes, diagrams, or question papers).
+Extract all key concepts, formulas, and data points.
+Then generate exactly ${count} ${level}-level MCQs based on the image content.
+IMPORTANT: For the 'reason' field, you MUST provide a thorough, educator-quality explanation. If the question involves a calculation or derivation, provide it step-by-step so a student can follow the entire solution.
 
 ${formatPrompt("the image content", level, count)}
 `;
