@@ -58,16 +58,31 @@ export function MathText({ text, className }: MathTextProps) {
             continue;
         }
 
-        // 3. Inline LaTeX: $...$
-        const mathMatch = remaining.match(/^([\s\S]*?)\$([^$]+)\$/);
-        if (mathMatch) {
-            const before = mathMatch[1];
-            const math = mathMatch[2];
+        // 3. Block LaTeX: $$...$$ or \[...\]
+        const blockMathMatch = remaining.match(/^([\s\S]*?)(?:\$\$([\s\S]+?)\$\$|\\\[([\s\S]+?)\\\])/);
+        if (blockMathMatch) {
+            const before = blockMathMatch[1];
+            const math = blockMathMatch[2] || blockMathMatch[3];
+            if (before) elements.push(<MathText key={key++} text={before} />);
+            elements.push(
+                <div key={key++} className="my-2 overflow-x-auto">
+                    <InlineMath math={math.trim()} />
+                </div>
+            );
+            remaining = remaining.slice(blockMathMatch[0].length);
+            continue;
+        }
+
+        // 4. Inline LaTeX: $...$ or \(...\)
+        const inlineMathMatch = remaining.match(/^([\s\S]*?)(?:\$([^$]+?)\$|\\\(([\s\S]+?)\\\))/);
+        if (inlineMathMatch) {
+            const before = inlineMathMatch[1];
+            const math = inlineMathMatch[2] || inlineMathMatch[3];
             if (before) elements.push(<InlinePlain key={key++} text={before} />);
             elements.push(
-                <InlineMath key={key++} math={math} />
+                <InlineMath key={key++} math={math.trim()} />
             );
-            remaining = remaining.slice(mathMatch[0].length);
+            remaining = remaining.slice(inlineMathMatch[0].length);
             continue;
         }
 
@@ -90,6 +105,18 @@ export function MathText({ text, className }: MathTextProps) {
             if (before) elements.push(<MathText key={key++} text={before} />);
             elements.push(<em key={key++}>{italic}</em>);
             remaining = remaining.slice(italicMatch[0].length);
+            continue;
+        }
+
+        // 6. Potential raw LaTeX without delimiters: \text{...}, \frac{...}, \approx, etc.
+        const rawMathMatch = remaining.match(/^([\s\S]*?)(\\(?:text|frac|sqrt|sum|int|approx|times|Delta|alpha|beta|gamma|theta|rho|sigma|tau|phi|omega|lambda)\b(?:\{[\s\S]*?\}|[\s\S]*?)|\\\w+\^\{[\s\S]*?\})/);
+        // Be careful: we only want to match if it looks like real math
+        if (rawMathMatch && rawMathMatch[2].length > 3) {
+            const before = rawMathMatch[1];
+            const math = rawMathMatch[2];
+            if (before) elements.push(<InlinePlain key={key++} text={before} />);
+            elements.push(<InlineMath key={key++} math={math} />);
+            remaining = remaining.slice(rawMathMatch[0].length);
             continue;
         }
 

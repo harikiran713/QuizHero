@@ -49,12 +49,12 @@ Generate exactly ${count} ${level}-level multiple choice questions (MCQs) on the
 
 Each question must follow this JSON structure precisely:
 {
-  "question": "The question text, including any necessary math or scientific notation in LaTeX format.",
-  "answer": "The single correct answer text (keep concise).",
-  "option1": "First incorrect option.",
-  "option2": "Second incorrect option.",
-  "option3": "Third incorrect option.",
-  "reason": "A clear, concise, and concept-based explanation for the correct answer."
+  "question": "The question text. IMPORTANT: All math, scientific notation, or formulas MUST be wrapped in '$' for inline math like $E=mc^2$ or '$$' for block math.",
+  "answer": "The single correct answer text (keep concise). Wrap math in '$' if needed.",
+  "option1": "First incorrect option. Wrap math in '$' if needed.",
+  "option2": "Second incorrect option. Wrap math in '$' if needed.",
+  "option3": "Third incorrect option. Wrap math in '$' if needed.",
+  "reason": "A clear, concise explanation. IMPORTANT: All math/formulas MUST be wrapped in '$' or '$$'."
 }
 
 Output strictly in the following final JSON format, with no markdown or extra text:
