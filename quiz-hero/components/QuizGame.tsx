@@ -40,6 +40,8 @@ interface AnswerResult {
   correctAnswer: string;
 }
 
+import { useMutation } from "@tanstack/react-query";
+
 export default function QuizGame({ game }: QuizGameProps) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string>("");
@@ -47,8 +49,41 @@ export default function QuizGame({ game }: QuizGameProps) {
   const [answerResult, setAnswerResult] = useState<AnswerResult | null>(null);
   const [score, setScore] = useState({ correct: 0, incorrect: 0 });
   const [timer, setTimer] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
   const [quizCompleted, setQuizCompleted] = useState(false);
+
+  const { mutate: submitAnswer, isPending: isLoading } = useMutation({
+    mutationFn: async () => {
+      const res = await fetch("/api/answer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          questionId: currentQuestion.id,
+          userAnswer: selectedAnswer,
+        }),
+      });
+      if (!res.ok) throw new Error("Failed to submit answer");
+      return res.json();
+    },
+    onSuccess: (data) => {
+      const result: AnswerResult = {
+        isCorrect: data.isCorrect,
+        correctAnswer: data.correctAnswer,
+        explanation: data.explanation,
+      };
+
+      setAnswerResult(result);
+      setShowResult(true);
+
+      if (result.isCorrect) {
+        setScore((prev) => ({ ...prev, correct: prev.correct + 1 }));
+      } else {
+        setScore((prev) => ({ ...prev, incorrect: prev.incorrect + 1 }));
+      }
+    },
+    onError: (err) => {
+      console.error("Submit error", err);
+    },
+  });
 
   const currentQuestion = game.questions[currentQuestionIndex];
   const totalQuestions = game.questions.length;
@@ -83,41 +118,9 @@ export default function QuizGame({ game }: QuizGameProps) {
     }
   };
 
-  const handleSubmitAnswer = async () => {
+  const handleSubmitAnswer = () => {
     if (!selectedAnswer) return;
-    setIsLoading(true);
-
-    try {
-      const res = await fetch("/api/answer", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          questionId: currentQuestion.id,
-          userAnswer: selectedAnswer,
-        }),
-      });
-
-      const data = await res.json();
-
-      const result: AnswerResult = {
-        isCorrect: data.isCorrect,
-        correctAnswer: data.correctAnswer,
-        explanation: data.explanation,
-      };
-
-      setAnswerResult(result);
-      setShowResult(true);
-
-      if (result.isCorrect) {
-        setScore((prev) => ({ ...prev, correct: prev.correct + 1 }));
-      } else {
-        setScore((prev) => ({ ...prev, incorrect: prev.incorrect + 1 }));
-      }
-    } catch (err) {
-      console.error("Submit error", err);
-    } finally {
-      setIsLoading(false);
-    }
+    submitAnswer();
   };
 
   const handleNextQuestion = () => {

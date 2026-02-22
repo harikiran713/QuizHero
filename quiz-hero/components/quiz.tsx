@@ -32,6 +32,8 @@ const difficulties = [
   { value: "hard", label: "Hard", color: "text-red-600" },
 ] as const;
 
+import { useMutation } from "@tanstack/react-query";
+
 export default function QuizCreation() {
   const router = useRouter();
 
@@ -52,8 +54,44 @@ export default function QuizCreation() {
   const [dragging, setDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const { mutate: createQuiz, isPending: isLoading } = useMutation({
+    mutationFn: async () => {
+      if (tab === "topic") {
+        const response = await axios.post(`/api/game`, { questions, topic, mode, difficulty });
+        return response.data;
+      } else {
+        // Convert image to base64
+        const reader = new FileReader();
+        const base64 = await new Promise<string>((resolve, reject) => {
+          reader.onload = () => {
+            const result = reader.result as string;
+            resolve(result.split(",")[1]);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(imageFile!);
+        });
+
+        const response = await axios.post(`/api/game/image`, {
+          imageBase64: base64,
+          mimeType: imageFile!.type,
+          questions,
+          difficulty,
+          mode,
+        });
+        return response.data;
+      }
+    },
+    onSuccess: (data) => {
+      router.push(`/play/${data.gameId}`);
+    },
+    onError: (error: any) => {
+      const detail = error?.response?.data?.detail ?? "";
+      const failedAt = error?.response?.data?.failedAt ?? "";
+      setErrorMsg(`Error at [${failedAt || "unknown"}]: ${detail || error.message}`);
+    },
+  });
 
   // ── Image helpers ──────────────────────────────────────────────
   const handleImageSelect = (file: File) => {
@@ -82,44 +120,10 @@ export default function QuizCreation() {
   };
 
   // ── Submit ──────────────────────────────────────────────────────
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
     setErrorMsg(null);
-
-    try {
-      if (tab === "topic") {
-        const response = await axios.post(`/api/game`, { questions, topic, mode, difficulty });
-        router.push(`/play/${response.data.gameId}`);
-      } else {
-        // Convert image to base64
-        const reader = new FileReader();
-        const base64 = await new Promise<string>((resolve, reject) => {
-          reader.onload = () => {
-            const result = reader.result as string;
-            // Strip the data URL prefix to get raw base64
-            resolve(result.split(",")[1]);
-          };
-          reader.onerror = reject;
-          reader.readAsDataURL(imageFile!);
-        });
-
-        const response = await axios.post(`/api/game/image`, {
-          imageBase64: base64,
-          mimeType: imageFile!.type,
-          questions,
-          difficulty,
-          mode,
-        });
-        router.push(`/play/${response.data.gameId}`);
-      }
-    } catch (error: any) {
-      const detail = error?.response?.data?.detail ?? "";
-      const failedAt = error?.response?.data?.failedAt ?? "";
-      setErrorMsg(`Error at [${failedAt || "unknown"}]: ${detail || error.message}`);
-    } finally {
-      setIsLoading(false);
-    }
+    createQuiz();
   };
 
   const canSubmit =

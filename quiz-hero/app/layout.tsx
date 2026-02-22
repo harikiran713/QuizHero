@@ -5,7 +5,7 @@ import "./globals.css";
 import { Providers } from "./providers";
 import Header from "@/components/landing/header";
 import PageTransition from "@/components/PageTransition";
-
+import { GlobalLoader } from "@/components/ui/global-loader";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,6 +32,7 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}>
 
         <Providers>
+          <GlobalLoader />
           <Header />
           <PageTransition>{children}</PageTransition>
         </Providers>
