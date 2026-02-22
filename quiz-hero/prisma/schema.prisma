@@ -84,6 +84,8 @@ model Game {
   difficulty String
   timeEnded   DateTime?
   gameType    GameType
+  score       Int        @default(0)
+  totalQuestions Int     @default(0)
   user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])

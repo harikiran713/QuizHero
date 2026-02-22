@@ -44,6 +44,7 @@ export async function POST(req: NextRequest) {
         timeStarted: new Date(),
         userId: session.user.id,
         topic,
+        totalQuestions: questions,
       },
     });
 

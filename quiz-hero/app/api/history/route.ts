@@ -1,10 +1,15 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import authOptions from "@/lib/authOptions";
 import prisma from "@/lib/db";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
     try {
+        const { searchParams } = new URL(req.url);
+        const limit = parseInt(searchParams.get("limit") || "10");
+        const page = parseInt(searchParams.get("page") || "1");
+        const skip = (page - 1) * limit;
+
         const session = await getServerSession(authOptions);
 
         if (!session?.user) {
@@ -18,37 +23,23 @@ export async function GET() {
             where: {
                 userId: session.user.id,
             },
+            take: limit,
+            skip: skip,
             orderBy: {
                 timeStarted: "desc",
             },
-            include: {
-                _count: {
-                    select: {
-                        questions: true,
-                    },
-                },
-                questions: {
-                    select: {
-                        isCorrect: true,
-                    },
-                },
+            select: {
+                id: true,
+                topic: true,
+                gameType: true,
+                difficulty: true,
+                timeStarted: true,
+                totalQuestions: true,
+                score: true,
             },
         });
 
-        const parsedGames = games.map((game) => {
-            const correctAnswers = game.questions.filter((q) => q.isCorrect).length;
-            return {
-                id: game.id,
-                topic: game.topic,
-                gameType: game.gameType,
-                difficulty: game.difficulty,
-                timeStarted: game.timeStarted,
-                totalQuestions: game._count.questions,
-                score: correctAnswers,
-            };
-        });
-
-        return NextResponse.json({ games: parsedGames });
+        return NextResponse.json({ games });
     } catch (error) {
         console.error("Error fetching history:", error);
         return NextResponse.json(

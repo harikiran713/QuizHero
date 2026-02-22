@@ -30,24 +30,46 @@ interface Game {
 export default function HistoryPage() {
     const [games, setGames] = useState<Game[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
+    const [isFetchingMore, setIsFetchingMore] = useState(false);
+
+    const fetchHistory = async (pageToFetch: number, isInitial = false) => {
+        try {
+            if (isInitial) setIsLoading(true);
+            else setIsFetchingMore(true);
+
+            const response = await fetch(`/api/history?page=${pageToFetch}&limit=10`);
+            const data = await response.json();
+
+            if (data.games) {
+                if (data.games.length < 10) {
+                    setHasMore(false);
+                }
+
+                if (isInitial) {
+                    setGames(data.games);
+                } else {
+                    setGames(prev => [...prev, ...data.games]);
+                }
+            }
+        } catch (error) {
+            console.error("Failed to fetch history:", error);
+        } finally {
+            setIsLoading(false);
+            setIsFetchingMore(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchHistory = async () => {
-            try {
-                const response = await fetch("/api/history");
-                const data = await response.json();
-                if (data.games) {
-                    setGames(data.games);
-                }
-            } catch (error) {
-                console.error("Failed to fetch history:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchHistory();
+        fetchHistory(1, true);
     }, []);
+
+    const handleLoadMore = () => {
+        const nextPage = page + 1;
+        setPage(nextPage);
+        fetchHistory(nextPage);
+    };
 
     if (isLoading) {
         return (
@@ -106,7 +128,7 @@ export default function HistoryPage() {
                                             <div className="flex items-center gap-4">
                                                 <div className="flex items-center gap-1">
                                                     <ListChecks className="w-4 h-4" />
-                                                    <span>{game.totalQuestions || game.questions?.length || 0} Questions</span>
+                                                    <span>{game.score} / {game.totalQuestions} Correct</span>
                                                 </div>
                                                 <div className="flex items-center gap-1">
                                                     <Clock className="w-4 h-4" />
@@ -121,6 +143,26 @@ export default function HistoryPage() {
                         ))
                     )}
                 </div>
+
+                {hasMore && games.length > 0 && (
+                    <div className="mt-8 flex justify-center">
+                        <Button
+                            onClick={handleLoadMore}
+                            disabled={isFetchingMore}
+                            variant="outline"
+                            className="bg-white"
+                        >
+                            {isFetchingMore ? (
+                                <>
+                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                    Loading...
+                                </>
+                            ) : (
+                                "Load More"
+                            )}
+                        </Button>
+                    </div>
+                )}
             </div>
         </div>
     );

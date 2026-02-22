@@ -24,13 +24,13 @@ const modes = [
   { value: "upsc", label: "UPSC", icon: GraduationCap, description: "Civil services preparation" },
   { value: "jee_inorganic", label: "JEE Inorganic", icon: BookOpen, description: "JEE inorganic chemistry" },
   { value: "gate", label: "GATE Exam", icon: GraduationCap, description: "Graduate Aptitude Test in Engineering" },
-];
+] as const;
 
 const difficulties = [
   { value: "easy", label: "Easy", color: "text-green-600" },
   { value: "medium", label: "Medium", color: "text-yellow-600" },
   { value: "hard", label: "Hard", color: "text-red-600" },
-];
+] as const;
 
 export default function QuizCreation() {
   const router = useRouter();

@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-   
+
     const isCorrect =
       question.answer.toLowerCase().trim() === userAnswer.toLowerCase().trim();
 
@@ -31,11 +31,22 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    if (isCorrect) {
+      await prisma.game.update({
+        where: { id: question.gameId },
+        data: {
+          score: {
+            increment: 1,
+          },
+        },
+      });
+    }
+
     return NextResponse.json(
       {
         isCorrect,
         correctAnswer: question.answer,
-        explanation:question.reason,
+        explanation: question.reason,
       },
       { status: 200 }
     );
