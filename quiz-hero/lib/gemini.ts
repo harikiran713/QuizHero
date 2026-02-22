@@ -11,7 +11,7 @@ function getModel() {
             throw new Error("GEMINI_API_KEY environment variable is not set.");
         }
         const genAI = new GoogleGenerativeAI(apiKey);
-        _model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+        _model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
     }
     return _model;
 }
@@ -125,12 +125,14 @@ async function askWithRetry(systemPrompt: string, userPrompt: string, retries = 
     throw new Error("Quiz generation loop unexpectedly terminated.");
 }
 
+const CHUNK_SIZE = 5;
+
 export async function generateQuizQuestions({ topic, level, count, mode = "general" }: QuizRequest) {
     if (!topic || topic.trim() === "") {
         throw new Error("Topic cannot be empty.");
     }
     if (count < 1 || count > 50) {
-        throw new Error("Number of questions must be between 1 and 10.");
+        throw new Error("Number of questions must be between 1 and 50.");
     }
     if (!['easy', 'medium', 'hard'].includes(level)) {
         throw new Error("Invalid difficulty level.");
@@ -140,9 +142,26 @@ export async function generateQuizQuestions({ topic, level, count, mode = "gener
     }
 
     const systemPrompt = SYSTEM_PROMPTS[mode] ?? SYSTEM_PROMPTS["general"];
-    const userPrompt = formatPrompt(topic, level, count);
 
-    return await askWithRetry(systemPrompt, userPrompt);
+    if (count <= CHUNK_SIZE) {
+        const userPrompt = formatPrompt(topic, level, count);
+        return await askWithRetry(systemPrompt, userPrompt);
+    }
+
+    // Parallel processing for larger counts
+    const numChunks = Math.ceil(count / CHUNK_SIZE);
+    const chunkPromises = [];
+
+    for (let i = 0; i < numChunks; i++) {
+        const currentCount = i === numChunks - 1 ? count - (i * CHUNK_SIZE) : CHUNK_SIZE;
+        const userPrompt = formatPrompt(topic, level, currentCount);
+        chunkPromises.push(askWithRetry(systemPrompt, userPrompt));
+    }
+
+    const results = await Promise.all(chunkPromises);
+    const allQuestions = results.flatMap(res => res.questions);
+
+    return { questions: allQuestions };
 }
 
 export async function generateFromImage({
@@ -163,6 +182,33 @@ export async function generateFromImage({
 
     const systemPrompt = SYSTEM_PROMPTS[mode] ?? SYSTEM_PROMPTS["general"];
 
+    if (count <= CHUNK_SIZE) {
+        return await askFromImageWithRetry(systemPrompt, imageBase64, mimeType, level, count);
+    }
+
+    // Parallel processing for images
+    const numChunks = Math.ceil(count / CHUNK_SIZE);
+    const chunkPromises = [];
+
+    for (let i = 0; i < numChunks; i++) {
+        const currentCount = i === numChunks - 1 ? count - (i * CHUNK_SIZE) : CHUNK_SIZE;
+        chunkPromises.push(askFromImageWithRetry(systemPrompt, imageBase64, mimeType, level, currentCount));
+    }
+
+    const results = await Promise.all(chunkPromises);
+    const allQuestions = results.flatMap(res => res.questions);
+
+    return { questions: allQuestions };
+}
+
+async function askFromImageWithRetry(
+    systemPrompt: string,
+    imageBase64: string,
+    mimeType: string,
+    level: Difficulty,
+    count: number,
+    retries = 3
+): Promise<any> {
     const userPrompt = `
 Carefully analyze the content in the provided image (textbook pages, handwritten notes, diagrams, or question papers).
 Extract all key concepts, formulas, and data points.
@@ -172,7 +218,7 @@ IMPORTANT: For the 'reason' field, you MUST provide a thorough, educator-quality
 ${formatPrompt("the image content", level, count)}
 `;
 
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < retries; i++) {
         try {
             const result = await getModel().generateContent({
                 contents: [
@@ -203,7 +249,7 @@ ${formatPrompt("the image content", level, count)}
             if (isValidJSONResponse(json)) return json;
             throw new Error("Invalid JSON structure from Gemini Vision.");
         } catch (e: any) {
-            if (i === 2) throw new Error(`Gemini Vision failed after 3 retries: ${e.message}`);
+            if (i === retries - 1) throw new Error(`Gemini Vision failed after ${retries} retries: ${e.message}`);
             await new Promise(r => setTimeout(r, 1000 * Math.pow(2, i)));
         }
     }
